@@ -1,7 +1,9 @@
 <script setup>
 import axios from 'axios';
 import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter()
 const title = ref('') // 绑定输入的標題
 const startDate = ref('') // 绑定開始時間
 const endDate = ref('') // 绑定結束時間
@@ -36,6 +38,10 @@ const handleCurrentChange = (val) => {
   currentPage.value = val;
 };
 
+const goEdit = (row) => {
+  sessionStorage.setItem('formData', JSON.stringify(row))
+  router.push('/edit')
+}
 onMounted(() => search())
 </script>
 
@@ -56,31 +62,25 @@ onMounted(() => search())
         <el-date-picker style="width:27%" v-model="endDate" type="date" placeholder="請選擇日期" value-format="YYYY-MM-DD" />
 
         <i class="fa-solid fa-magnifying-glass" @click="search"></i>
-        <i class="fa-solid fa-square-plus"  @click="$router.push('/add')"></i>
+        <i class="fa-solid fa-square-plus" @click="$router.push('/add')"></i>
       </div>
     </div>
     <el-table class="main" :data="paginatedList" v-if="paginatedList.length > 0" stripe style="width: 990px;">
-      <el-table-column label="ID" prop="questionnaire.id" width="50"></el-table-column>
+      <el-table-column label="ID" prop="questionnaire.id" width="70"></el-table-column>
       <el-table-column label="標題" prop="questionnaire.title" width="160"></el-table-column>
       <el-table-column label="描述" prop="questionnaire.description" width="180"></el-table-column>
       <el-table-column label="狀態" prop="questionnaire.published" width="90"></el-table-column>
       <el-table-column label="開始" prop="questionnaire.startDate"></el-table-column>
       <el-table-column label="結束" prop="questionnaire.endDate"></el-table-column>
-      <el-table-column label="編輯" width="70">
-                <template #default="{ row }">
-                    <i class="fa-solid fa-pencil"></i>
-                </template>
-            </el-table-column>
-            <el-table-column label="統計" width="70">
-                <template #default="{ row }">
-                    <i class="fa-solid fa-square-poll-vertical"></i>
-                </template>
-            </el-table-column>
-            <el-table-column label="回饋" width="70">
-                <template #default="{ row }">
-                    <i class="fa-solid fa-file-lines"></i>
-                </template>
-            </el-table-column>
+      <el-table-column label="編輯" width="70" #default="{ row }">
+            <i class="fa-solid fa-pencil" @click="goEdit(row)"></i>
+      </el-table-column>
+      <el-table-column label="統計" width="70">
+        <i class="fa-solid fa-square-poll-vertical"></i>
+      </el-table-column>
+      <el-table-column label="回饋" width="70">
+        <i class="fa-solid fa-file-lines"></i>
+      </el-table-column>
     </el-table>
     <div v-else class="noTable">
       <h3>無搜尋結果</h3>
@@ -92,7 +92,6 @@ onMounted(() => search())
 </template>
 
 <style lang="scss" scoped>
-
 .bgArea {
   height: 600px;
   display: flex;

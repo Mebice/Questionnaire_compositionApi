@@ -61,11 +61,6 @@ const loadFromSessionStorage = () => {
 
 // 清空数据并返回
 const clearDataAndReturn = () => {
-    title.value = ''
-    description.value = ''
-    startDate.value = dayjs().add(2, 'day').format('YYYY-MM-DD')
-    endDate.value = dayjs().add(7, 'day').format('YYYY-MM-DD')
-    questionList.value = [{ qTitle: '', type: '', isNecessary: true, options: [{ value: '' }, { value: '' }] }]
     sessionStorage.removeItem('formData')
     // 返回
     router.push('/')
@@ -87,7 +82,6 @@ onMounted(() => {
 
     // 从本地存储加载formData數據
     loadFromSessionStorage()
-
 })
 
 </script>

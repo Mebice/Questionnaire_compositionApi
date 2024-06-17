@@ -1,11 +1,15 @@
 <script setup>
+import axios from 'axios';
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
 const title = ref('');
 const description = ref('');
 const startDate = ref('');
 const endDate = ref('');
 const questionList = ref([{ qTitle: '', type: '', isNecessary: true, options: [{ value: '' }, { value: '' }] }]);
+const isPublish = ref(false)
+const router = useRouter()
 
 // 从本地存储加载
 const loadFromSessionStorage = () => {
@@ -18,6 +22,30 @@ const loadFromSessionStorage = () => {
         questionList.value = formData.questionList;
     }
 };
+
+const save = async () => {
+    await axios.post('http://localhost:8080/api/quiz/create', {
+        questionnaire: {
+            title: title.value,
+            description: description.value,
+            published: isPublish.value,
+            startDate: startDate.value,
+            endDate: endDate.value,
+        },
+        questionList: questionList.value.map((item, index) => ({
+            quId: `${index + 1}`,
+            qTitle: item.qTitle,
+            optionType: item.type,
+            necessary: item.isNecessary,
+            option: item.options.map(option => option.value).join(';'),
+        })),
+    })
+    // 清空本地数据
+    sessionStorage.removeItem('formData')
+    // 返回
+    router.push('/')
+
+}
 
 onMounted(() => {
     loadFromSessionStorage();
@@ -49,8 +77,8 @@ onMounted(() => {
                 </div>
             </div>
         </div>
-        <!-- 顯示題目列表 -->
         <div class="questionListArea">
+            <!-- 顯示題目列表 -->
             <div class="questionList" v-for="(questionItem, questionIndex) in questionList" :key="questionItem.id">
                 <div class="questionListInside">
                     <div class="qTitleAndNecessary">
@@ -68,14 +96,18 @@ onMounted(() => {
                         <div class="option-radio" v-for="(option, optionIndex) in questionItem.options"
                             :key="optionIndex">
                             <el-radio-group v-model="option.value" disabled>
-                                <el-radio value="option" >{{ option.value }}</el-radio>
+                                <el-radio value="option">{{ option.value }}</el-radio>
                             </el-radio-group>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="btnArea">
+                <i class="fa-solid fa-arrow-left" @click="$router.push('/add')"></i>
+                <el-checkbox v-model="isPublish" label="發布問卷" />
+                <i class="fa-solid fa-floppy-disk" @click="save"></i>
+            </div>
         </div>
-
     </div>
 </template>
 
@@ -103,7 +135,7 @@ onMounted(() => {
         font-weight: 700;
 
         h2 {
-            height: 15px;
+            height: 20px;
             margin-top: 10px;
         }
     }
@@ -159,7 +191,7 @@ onMounted(() => {
         padding: 25px 0 3px 0;
         border-radius: 10px;
         box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, 0.28);
-        margin-bottom: 3%;
+        margin-bottom: 30px;
         color: #6e4e23;
         font-weight: 700;
 
@@ -177,30 +209,41 @@ onMounted(() => {
                     display: flex;
                     align-items: center;
                 }
+
+                :deep(.el-checkbox__inner),
+                :deep(.el-radio__inner) {
+                    // 複選框和單選框
+                    border: 1px solid $textcolor;
+                }
+
+                :deep(.el-checkbox__label),
+                :deep(.el-radio__label) {
+                    // 複選框和單選框文字
+                    font-weight: 700;
+                    color: $textcolor;
+                }
             }
         }
     }
 
     .btnArea {
-        width: 60%;
+        width: 850px;
         display: flex;
-        flex-direction: column;
         align-items: center;
-        background-color: #ffffff;
-        border-radius: 10px;
-        box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, 0.28);
-        padding: 15px 0;
-        margin: -12px 0 30px 0;
-        color: #6e4e23;
-        font-weight: 700;
+        justify-content: space-between;
+        padding-bottom: 20px;
 
-        span {
-            margin-left: 10px;
+        :deep(.el-checkbox__inner) {
+            border: 1px solid $textcolor;
+        }
+
+        :deep(.el-checkbox__label) {
+            font-size: 12pt;
+            font-weight: 700;
+            color: $textcolor;
         }
 
         .fa-arrow-left {
-            // color: rgba(161, 158, 158, 0.804);
-            // background-color: rgba(211, 211, 211, 0.804);
             font-size: 20pt;
             position: relative;
             margin-bottom: 50px;
