@@ -38,10 +38,11 @@ const handleCurrentChange = (val) => {
   currentPage.value = val;
 };
 
+// 將數據傳至編輯頁
 const goEdit = (row) => {
-  sessionStorage.setItem('formData', JSON.stringify(row))
-  router.push('/edit')
+  router.push({ path: '/edit', query: { data: JSON.stringify(row) } });
 }
+
 onMounted(() => search())
 </script>
 
