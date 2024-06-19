@@ -13,8 +13,8 @@ const router = createRouter({
       component: () => import('../views/Add.vue')
     },
     {
-      path: '/checkout',
-      component: () => import('../views/Checkout.vue')
+      path: '/addCheckout',
+      component: () => import('../views/AddCheckout.vue')
     },
     {
       path: '/edit',

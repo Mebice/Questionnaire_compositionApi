@@ -140,7 +140,7 @@ onMounted(() => {
             <!-- 返回或確認頁 -->
             <div class="button-container">
                 <i class="fa-solid fa-rotate-left" @click="clearDataAndReturn"></i>
-                <i class="fa-solid fa-arrow-right" @click="$router.push('/checkout')"></i>
+                <i class="fa-solid fa-arrow-right" @click="$router.push('/addCheckout')"></i>
             </div>
         </div>
     </div>

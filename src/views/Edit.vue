@@ -21,10 +21,24 @@ formData.value.questionList.forEach(question => {
     question.options = question.option.split(';').map(option => ({ value: option }));
 });
 
+// 初始化删除题目列表
+formData.value.deleteQuestionList = formData.value.deleteQuestionList || [];
+
+// 找到最大的 quId
+const getMaxQuId = () => {
+    const allQuIds = [
+        ...formData.value.questionList.map(q => q.quId),
+        ...formData.value.deleteQuestionList.map(q => q.quId)
+    ];
+    return allQuIds.length ? Math.max(...allQuIds) : 0;
+};
+
 // 添加題目
 const addQuestion = () => {
+    const newQuId = getMaxQuId() + 1;
     formData.value.questionList.push({
         qnId: formData.value.questionnaire.id, // 使用问卷的id作为qnId
+        quId: newQuId,
         qTitle: '',
         optionType: '',
         necessary: true,
@@ -34,7 +48,8 @@ const addQuestion = () => {
 
 // 刪除題目
 const removeQuestion = (questionIndex) => {
-    formData.value.questionList.splice(questionIndex, 1)
+    const deletedQuestion = formData.value.questionList.splice(questionIndex, 1)[0];
+    formData.value.deleteQuestionList.push(deletedQuestion);
 }
 
 // 添加选项
@@ -79,7 +94,7 @@ onMounted(() => {
     <div class="bgArea">
         <div class="form-container">
             <h3>編輯問卷</h3>
-            {{ formData }}
+            <!-- {{ formData }} -->
             <div class="inside">
                 <label for="questionnaireTitle">標題 : </label>
                 <el-input v-model="formData.questionnaire.title" placeholder="請輸入標題" clearable />

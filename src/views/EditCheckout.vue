@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 const id = ref('');
 const title = ref('');
@@ -8,7 +9,8 @@ const description = ref('');
 const startDate = ref('');
 const endDate = ref('');
 const questionList = ref([{ qTitle: '', optionType: '', necessary: true, options: [{ value: '' }, { value: '' }] }]);
-const isPublish = ref(false)
+const published = ref(false)
+const deleteQuestionList = ref([]);
 const router = useRouter()
 
 const save = async () => {
@@ -17,22 +19,22 @@ const save = async () => {
             id: id.value,  // 將問卷 ID 包含在請求中
             title: title.value,
             description: description.value,
-            published: isPublish.value,
+            published: published.value,
             startDate: startDate.value,
             endDate: endDate.value,
         },
         questionList: questionList.value.map((item, index) => ({
             qnId: item.qnId,
-            quId: `${index + 1}`,
+            quId: item.quId,
             qTitle: item.qTitle,
             optionType: item.optionType,
             necessary: item.necessary,
             option: item.options.map(option => option.value).join(';'),
         })),
         // 刪除的題目
-        deleteQuestionList: delQuestions.map((item) => ({
+        deleteQuestionList: deleteQuestionList.value.map((item) => ({
             qnId: item.qnId,
-            quId: parseInt(item.quId)
+            quId: item.quId
         })),
     })
     // 清空本地数据
@@ -49,9 +51,11 @@ const loadFromSessionStorage = () => {
         id.value = formData.questionnaire.id;
         title.value = formData.questionnaire.title;
         description.value = formData.questionnaire.description;
+        published.value = formData.questionnaire.published;
         startDate.value = formData.questionnaire.startDate;
         endDate.value = formData.questionnaire.endDate;
         questionList.value = formData.questionList;
+        deleteQuestionList.value = formData.deleteQuestionList;
     }
 };
 
@@ -62,14 +66,17 @@ const goBack = () => {
             id: id.value,
             title: title.value,
             description: description.value,
+            published: published.value,
             startDate: startDate.value,
             endDate: endDate.value,
-            published: isPublish.value
         },
         questionList: questionList.value.map(item => ({
             ...item,
             option: item.options.map(option => option.value).join(';')
-        }))
+        })),
+        deleteQuestionList: deleteQuestionList.value.map(item => ({
+            ...item,
+        })),
     };
     sessionStorage.setItem('formData', JSON.stringify(formData));
     router.push('/edit')
@@ -133,7 +140,7 @@ onMounted(() => {
             </div>
             <div class="btnArea">
                 <i class="fa-solid fa-arrow-left" @click="goBack"></i>
-                <el-checkbox v-model="isPublish" label="發布問卷" />
+                <el-checkbox v-model="published" label="發布問卷" />
                 <i class="fa-solid fa-floppy-disk" @click="save"></i>
             </div>
         </div>
