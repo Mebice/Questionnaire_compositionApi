@@ -19,6 +19,8 @@ const typeOptions = [ // 绑定題型選項
         label: '多選',
     }
 ]
+const returnDialog = ref(false) // 打開是否確認返回對話框
+
 
 const addQuestion = () => {  // 添加題目
     questionList.value.push({ qTitle: '', type: '', isNecessary: true, options: [{ value: '' }, { value: '' }] })
@@ -60,7 +62,7 @@ const loadFromSessionStorage = () => {
 }
 
 // 清空数据并返回
-const clearDataAndReturn = () => {
+const goBack = () => {
     sessionStorage.removeItem('formData')
     // 返回
     router.push('/')
@@ -139,7 +141,22 @@ onMounted(() => {
             </div>
             <!-- 返回或確認頁 -->
             <div class="button-container">
-                <i class="fa-solid fa-rotate-left" @click="clearDataAndReturn"></i>
+                <i class="fa-solid fa-rotate-left" @click="returnDialog = true"></i>
+                <!-- 彈出是否確認返回對話框 -->
+                <el-dialog v-model="returnDialog" width="500" align-center center>
+                    <div class="content" style="display: flex; justify-content: center;padding-bottom:10px;">
+                        <i class="fa-solid fa-circle-question"
+                            style="color: #6e4e23;font-size: 20pt;margin-right: 10px;"></i>
+                        <span style="color: #6e4e23;font-weight: 700;font-size: 16pt">確認返回 ?</span>
+                    </div>
+                    <template #footer>
+                        <div class="dialog-footer">
+                            <el-button @click="returnDialog = false">取消</el-button>
+                            <el-button type="primary" @click="goBack">確認</el-button>
+                        </div>
+                    </template>
+                </el-dialog>
+                <!-- 到下一頁確認頁 -->
                 <i class="fa-solid fa-arrow-right" @click="$router.push('/addCheckout')"></i>
             </div>
         </div>

@@ -43,6 +43,19 @@ const handleCurrentChange = (val) => {
   currentPage.value = val;
 };
 
+// 計算問卷的狀態
+const getStatus = (questionnaire) => {
+  if (!questionnaire.published) {
+    return '未發布';
+  } else if (new Date(questionnaire.startDate) > new Date()) {
+    return '未開始';
+  } else if (new Date(questionnaire.endDate) < new Date()) {
+    return '已結束';
+  } else {
+    return '進行中';
+  }
+}
+
 // 切換選擇列的顯示狀態
 const onSelectionDelete = () => {
   if (!showSelection.value) {  // 当点击垃圾桶图标时，如果没有打开选择列，先打开选择列
@@ -117,7 +130,9 @@ onMounted(() => search())
       <el-table-column label="ID" prop="questionnaire.id" width="70"></el-table-column>
       <el-table-column label="標題" prop="questionnaire.title" width="160"></el-table-column>
       <el-table-column label="描述" prop="questionnaire.description" width="180"></el-table-column>
-      <el-table-column label="狀態" prop="questionnaire.published" width="90"></el-table-column>
+      <el-table-column label="狀態" prop="questionnaire.published" width="90" #default="{ row }">
+        {{ getStatus(row.questionnaire) }}
+      </el-table-column>
       <el-table-column label="開始" prop="questionnaire.startDate"></el-table-column>
       <el-table-column label="結束" prop="questionnaire.endDate"></el-table-column>
       <el-table-column label="編輯" width="60" #default="{ row }">

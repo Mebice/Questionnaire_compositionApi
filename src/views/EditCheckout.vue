@@ -2,6 +2,8 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import { ElMessage } from 'element-plus';  // 提示框
+import 'element-plus/theme-chalk/el-message.css' // 提示框樣式
 
 const id = ref('');
 const title = ref('');
@@ -37,6 +39,7 @@ const save = async () => {
             quId: item.quId
         })),
     })
+    ElMessage({ message: '修改成功', type: 'success', })
     // 清空本地数据
     sessionStorage.removeItem('formData')
     // 返回
