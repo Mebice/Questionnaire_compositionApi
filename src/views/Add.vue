@@ -147,7 +147,7 @@ onMounted(() => {
                     <div class="content" style="display: flex; justify-content: center;padding-bottom:10px;">
                         <i class="fa-solid fa-circle-question"
                             style="color: #6e4e23;font-size: 20pt;margin-right: 10px;"></i>
-                        <span style="color: #6e4e23;font-weight: 700;font-size: 16pt">確認返回 ?</span>
+                        <span style="color: #6e4e23;font-weight: 700;font-size: 16pt">放棄新增 ?</span>
                     </div>
                     <template #footer>
                         <div class="dialog-footer">

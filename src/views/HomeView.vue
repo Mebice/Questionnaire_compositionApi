@@ -19,6 +19,10 @@ const dialogSelection = ref(false); // 控制对话框的显示
 
 // 查詢
 const search = async () => {
+  if (title.value || startDate.value || endDate.value) { // 當標題或開始時間或結束時間有值時
+    currentPage.value = 1  // 讓當前頁回到第一頁
+    sessionStorage.setItem('currentPage', JSON.stringify(currentPage.value)) // 將當前頁存在sessionStorage
+  }
   const response = await axios.get(`http://localhost:8080/api/quiz/search`, {
     params: {
       title: title.value,
@@ -26,9 +30,26 @@ const search = async () => {
       end_date: endDate.value
     }
   })
+
   list.value = response.data.quizVo;
   total.value = list.value.length; // 總數據量设为返回的数据长度
+
+  if (title.value || startDate.value || endDate.value) { // 當搜尋欄有值時
+    sessionStorage.setItem('searchTitle', JSON.stringify(title.value)); // 存儲標題
+    sessionStorage.setItem('searchStartDate', JSON.stringify(startDate.value)); // 存儲開始時間
+    sessionStorage.setItem('searchEndDate', JSON.stringify(endDate.value)); // 存儲結束時間
+  } else {  // 否則沒值就清空
+    sessionStorage.removeItem('searchTitle')
+    sessionStorage.removeItem('searchStartDate')
+    sessionStorage.removeItem('searchEndDate')
+  }
 }
+const loadSearch = () => {   // 讀取sessionStorage中的搜尋紀錄
+  title.value = JSON.parse(sessionStorage.getItem('searchTitle'));
+  startDate.value = JSON.parse(sessionStorage.getItem('searchStartDate'));
+  endDate.value = JSON.parse(sessionStorage.getItem('searchEndDate'));
+}
+
 
 // 計算分頁
 const paginatedList = computed(() => {
@@ -41,7 +62,12 @@ const handleSizeChange = (val) => {
 };
 const handleCurrentChange = (val) => {
   currentPage.value = val;
+  sessionStorage.setItem('currentPage', JSON.stringify(currentPage.value)) // 將當前頁存在sessionStorage
 };
+const loadCurrentPage = () => {   // 讀取存在sessionStorage中的當前頁
+  if (sessionStorage.getItem('currentPage')) // 如果sessionStorage中存在當前頁
+    currentPage.value = JSON.parse(sessionStorage.getItem('currentPage'))
+}
 
 // 計算問卷的狀態
 const getStatus = (questionnaire) => {
@@ -60,7 +86,7 @@ const getStatus = (questionnaire) => {
 const onSelectionDelete = () => {
   if (!showSelection.value) {  // 当点击垃圾桶图标时，如果没有打开选择列，先打开选择列
     showSelection.value = true;
-  } else {
+  } else { // 否則就是在已經打開選擇列的情況下
     if (selectedRows.value.length > 0) {  // 如果已经打开选择列并且有选中的行，则打开一个对话框显示选中的行
       dialogSelection.value = true;
     } else {
@@ -87,13 +113,12 @@ const goDelete = async () => {
   search(); // 刷新数据
 }
 
-// 取消或離開刪除對話框
+// 取消或離開確認刪除對話框
 const cancelDelete = () => {
   // 將選中的問卷回到未勾選狀態
-  selectedRows.value.forEach(item => {
-    item.selection = false;
-  });
+  selectedRows.value = []
   dialogSelection.value = false; // 关闭对话框
+  search(); // 刷新数据
 }
 
 // 將數據傳至編輯頁
@@ -101,7 +126,7 @@ const goEdit = (row) => {
   router.push({ path: '/edit', query: { data: JSON.stringify(row) } });
 }
 
-onMounted(() => search())
+onMounted(() => search(), loadCurrentPage(), loadSearch())
 </script>
 
 <template>
