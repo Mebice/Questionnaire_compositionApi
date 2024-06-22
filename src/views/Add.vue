@@ -2,6 +2,8 @@
 import dayjs from 'dayjs'  //  dayjs 库，用于处理日期
 import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus';  // 提示框
+import 'element-plus/theme-chalk/el-message.css' // 提示框樣式
 
 const router = useRouter()
 const title = ref('')
@@ -59,6 +61,36 @@ const loadFromSessionStorage = () => {
         endDate.value = formData.endDate
         questionList.value = formData.questionList
     }
+}
+
+// 前往下一頁
+const goNext = () => {
+    if (!title.value || !description.value || !startDate.value || !endDate.value) {
+        ElMessage.warning('標題、描述、開始時間和結束時間不得為空');
+        return;
+    }
+    if(questionList.value.length < 1){
+        ElMessage.warning('請至少新增一道題目')
+        return
+    }
+    for (let i = 0; i < questionList.value.length; i++) {
+        const question = questionList.value[i];
+        if (!question.qTitle || !question.type) {
+            ElMessage.warning(`第 ${i + 1} 題的標題和題型不得為空`);
+            return;
+        }
+        if (question.options.length < 2) {
+            ElMessage.warning(`第 ${i + 1} 題請至少新增兩個選項`);
+            return;
+        }
+        for (let j = 0; j < question.options.length; j++) {
+            if (!question.options[j].value) {
+                ElMessage.warning(`第 ${i + 1} 題的選項不得為空`);
+                return;
+            }
+        }
+    }
+    router.push('/addCheckout')
 }
 
 // 清空数据并返回
@@ -157,7 +189,7 @@ onMounted(() => {
                     </template>
                 </el-dialog>
                 <!-- 到下一頁確認頁 -->
-                <i class="fa-solid fa-arrow-right" @click="$router.push('/addCheckout')"></i>
+                <i class="fa-solid fa-arrow-right" @click="goNext"></i>
             </div>
         </div>
     </div>

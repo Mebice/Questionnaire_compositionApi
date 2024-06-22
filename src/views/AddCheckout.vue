@@ -11,6 +11,7 @@ const startDate = ref('');
 const endDate = ref('');
 const questionList = ref([{ qTitle: '', type: '', isNecessary: true, options: [{ value: '' }, { value: '' }] }]);
 const isPublish = ref(false)
+const saveDialog = ref(false) // 打開是否確認返回對話框
 const router = useRouter()
 
 // 从本地存储加载
@@ -108,7 +109,21 @@ onMounted(() => {
             <div class="btnArea">
                 <i class="fa-solid fa-arrow-left" @click="$router.push('/add')"></i>
                 <el-checkbox v-model="isPublish" label="發布問卷" />
-                <i class="fa-solid fa-floppy-disk" @click="save"></i>
+                <i class="fa-solid fa-floppy-disk" @click="saveDialog = true"></i>
+                <!-- 彈出是否確認儲存對話框 -->
+                <el-dialog v-model="saveDialog" width="500" align-center center>
+                    <div class="content" style="display: flex; justify-content: center;padding-bottom:10px;">
+                        <i class="fa-solid fa-circle-question"
+                            style="color: #6e4e23;font-size: 20pt;margin-right: 10px;"></i>
+                        <span style="color: #6e4e23;font-weight: 700;font-size: 16pt">儲存嗎 ?</span>
+                    </div>
+                    <template #footer>
+                        <div class="dialog-footer">
+                            <el-button @click="saveDialog = false">取消</el-button>
+                            <el-button type="primary" @click="save">確認</el-button>
+                        </div>
+                    </template>
+                </el-dialog>
             </div>
         </div>
     </div>

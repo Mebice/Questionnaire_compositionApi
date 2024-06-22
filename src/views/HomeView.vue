@@ -69,8 +69,8 @@ const loadCurrentPage = () => {   // 讀取存在sessionStorage中的當前頁
     currentPage.value = JSON.parse(sessionStorage.getItem('currentPage'))
 }
 
-// 計算問卷的狀態
-const getStatus = (questionnaire) => {
+// 問卷的狀態
+const publishedStatus = (questionnaire) => {
   if (!questionnaire.published) {
     return '未發布';
   } else if (new Date(questionnaire.startDate) > new Date()) {
@@ -156,12 +156,12 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
       <el-table-column label="標題" prop="questionnaire.title" width="160"></el-table-column>
       <el-table-column label="描述" prop="questionnaire.description" width="180"></el-table-column>
       <el-table-column label="狀態" prop="questionnaire.published" width="90" #default="{ row }">
-        {{ getStatus(row.questionnaire) }}
+        {{ publishedStatus(row.questionnaire) }}
       </el-table-column>
       <el-table-column label="開始" prop="questionnaire.startDate"></el-table-column>
       <el-table-column label="結束" prop="questionnaire.endDate"></el-table-column>
       <el-table-column label="編輯" width="60" #default="{ row }">
-        <i class="fa-solid fa-pencil" @click="goEdit(row)"></i>
+        <i class="fa-solid fa-pencil" v-if="publishedStatus(row.questionnaire) === '未發布' || publishedStatus(row.questionnaire) === '未開始'" @click="goEdit(row)"></i>
       </el-table-column>
       <el-table-column label="統計" width="60">
         <i class="fa-solid fa-square-poll-vertical"></i>

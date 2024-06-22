@@ -2,6 +2,8 @@
 import { ref, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus';  // 提示框
+import 'element-plus/theme-chalk/el-message.css' // 提示框樣式
 
 const route = useRoute();
 const router = useRouter()
@@ -37,10 +39,10 @@ const getMaxQuId = () => {
 
 // 添加題目
 const addQuestion = () => {
-    const newQuId = getMaxQuId() + 1;
+    const newQuId = getMaxQuId() + 1; // 在最大的quId+1 生成新的quId
     formData.value.questionList.push({
-        qnId: formData.value.questionnaire.id, // 使用问卷的id作为qnId
         quId: newQuId,
+        qnId: formData.value.questionnaire.id, // 使用问卷的id作为qnId
         qTitle: '',
         optionType: '',
         necessary: true,
@@ -64,6 +66,11 @@ const removeOption = (questionIndex, optionIndex) => {
     formData.value.questionList[questionIndex].options.splice(optionIndex, 1)
 }
 
+// 如果 sessionStorage 是空的，則將 JSON.parse(route.query.data) 存進 sessionStorage
+if (!sessionStorage.getItem('formData')) {
+    sessionStorage.setItem('formData', JSON.stringify(formData.value));
+}
+
 // 监听数据变化，保存到 sessionStorage
 const saveToSessionStorage = () => {
     sessionStorage.setItem('formData', JSON.stringify(formData.value));
@@ -79,6 +86,36 @@ const loadFromSessionStorage = () => {
 
 // 监听 formData 变化，保存到 sessionStorage
 watch(formData, saveToSessionStorage, { deep: true });
+
+// 前往下一頁
+const goNext = () => {
+    if (!formData.value.questionnaire.title || !formData.value.questionnaire.description || !formData.value.questionnaire.startDate || !formData.value.questionnaire.endDate) {
+        ElMessage.warning('標題、描述、開始時間和結束時間不得為空');
+        return;
+    }
+    if(formData.value.questionList.length < 1){
+        ElMessage.warning('請至少新增一道題目')
+        return
+    }
+    for (let i = 0; i < formData.value.questionList.length; i++) {
+        const question = formData.value.questionList[i];
+        if (!question.qTitle || !question.optionType) {
+            ElMessage.warning(`第 ${i + 1} 題的標題和題型不得為空`);
+            return;
+        }
+        if (question.options.length < 2) {
+            ElMessage.warning(`第 ${i + 1} 題請至少新增兩個選項`);
+            return;
+        }
+        for (let j = 0; j < question.options.length; j++) {
+            if (!question.options[j].value) {
+                ElMessage.warning(`第 ${i + 1} 題的選項不得為空`);
+                return;
+            }
+        }
+    }
+    router.push('/editCheckout')
+}
 
 // 清空数据并返回
 const goBack = () => {
@@ -162,7 +199,7 @@ onMounted(() => {
                     </template>
                 </el-dialog>
                 <!-- 到下一頁確認頁 -->
-                <i class="fa-solid fa-arrow-right" @click="$router.push('/editCheckout')"></i>
+                <i class="fa-solid fa-arrow-right" @click="goNext"></i>
             </div>
         </div>
     </div>
