@@ -10,7 +10,7 @@ const title = ref('')
 const description = ref('')
 const startDate = ref('') // 绑定開始時間
 const endDate = ref('') // 绑定結束時間
-const questionList = ref([{ qTitle: '', type: '', isNecessary: true, options: [{ value: '' }, { value: '' }] }])  // 绑定題目數組
+const questionList = ref([{ qTitle: '', optionType: '', necessary: true, options: [{ value: '' }, { value: '' }] }])  // 绑定題目數組
 const typeOptions = [ // 绑定題型選項
     {
         type: '單選',
@@ -25,7 +25,7 @@ const returnDialog = ref(false) // 打開是否確認返回對話框
 
 
 const addQuestion = () => {  // 添加題目
-    questionList.value.push({ qTitle: '', type: '', isNecessary: true, options: [{ value: '' }, { value: '' }] })
+    questionList.value.push({ qTitle: '', optionType: '', necessary: true, options: [{ value: '' }, { value: '' }] })
 }
 
 const removeQuestion = (questionIndex) => { // 刪除題目
@@ -75,7 +75,7 @@ const goNext = () => {
     }
     for (let i = 0; i < questionList.value.length; i++) {
         const question = questionList.value[i];
-        if (!question.qTitle || !question.type) {
+        if (!question.qTitle || !question.optionType) {
             ElMessage.warning(`第 ${i + 1} 題的標題和題型不得為空`);
             return;
         }
@@ -150,14 +150,14 @@ onMounted(() => {
                     <el-input v-model="questionItem.qTitle" :autosize="{ minRows: 1, maxRows: 6 }" type="textarea"
                         placeholder="請輸入題目" />
                     <label for="type">題型 : </label>
-                    <el-select v-model="questionItem.type" placeholder="請選擇題型" style="width: 240px">
+                    <el-select v-model="questionItem.optionType" placeholder="請選擇題型" style="width: 240px">
                         <el-option v-for="item in typeOptions" :key="item.type" :label="item.label"
                             :value="item.type" />
                     </el-select>
                     <br>
                     <div class="necessaryArea">
                         <span>必填 : </span>
-                        <el-checkbox v-model="questionItem.isNecessary" />
+                        <el-checkbox v-model="questionItem.necessary" />
                     </div>
                     <label for="question">選項 : </label>
                     <div class="option-item" v-for="(option, optionIndex) in questionItem.options" :key="optionIndex">
@@ -197,12 +197,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .bgArea {
-    display: flex;
-    align-items: center;
-    /* 垂直置中 */
-    justify-content: center;
-    /* 水平置中 */
-    padding: 50px 0;
+    padding: 50px 170px;
 
     .form-container {
         width: 850px;

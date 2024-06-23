@@ -25,10 +25,16 @@ const router = createRouter({
       component: () => import('../views/EditCheckout.vue')
     },
     {
-      path: '/test',
-      component: () => import('../views/Test.vue')
+      path: '/userHome',
+      component: () => import('../views/UserHome.vue')
     },
-  ]
+  ],
+  // 路由滾動行為訂製
+  scrollBehavior(){
+    return {
+      top:0
+    }
+  }
 })
 
 export default router

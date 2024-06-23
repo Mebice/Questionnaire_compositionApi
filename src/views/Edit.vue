@@ -207,12 +207,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .bgArea {
-    display: flex;
-    align-items: center;
-    /* 垂直置中 */
-    justify-content: center;
-    /* 水平置中 */
-    padding: 50px 0;
+    padding: 50px 170px;
 
     .form-container {
         width: 850px;

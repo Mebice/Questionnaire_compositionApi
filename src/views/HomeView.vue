@@ -131,9 +131,8 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
 
 <template>
   <div class="bgArea">
-    <div class="searchArea">
+    <!-- <div class="searchArea">
       <div class="searchTitle">
-        <div class="icon"></div>
         <i class="fa-solid fa-trash" @click="onSelectionDelete"></i>
         <span class="titleText">標題</span>
         <el-input v-model="title" placeholder="請輸入關鍵字" clearable />
@@ -148,20 +147,22 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
         <i class="fa-solid fa-magnifying-glass" @click="search"></i>
         <i class="fa-solid fa-square-plus" @click="$router.push('/add')"></i>
       </div>
-    </div>
+    </div> -->
     <el-table class="main" :data="paginatedList" @selection-change="handleSelectionChange"
       v-if="paginatedList.length > 0" stripe style="width: 990px;">
       <el-table-column v-if="showSelection" type="selection" width="50" />
       <el-table-column label="ID" prop="questionnaire.id" width="70"></el-table-column>
-      <el-table-column label="標題" prop="questionnaire.title" width="160"></el-table-column>
-      <el-table-column label="描述" prop="questionnaire.description" width="180"></el-table-column>
+      <el-table-column label="標題" prop="questionnaire.title"></el-table-column>
+      <el-table-column label="描述" prop="questionnaire.description"></el-table-column>
       <el-table-column label="狀態" prop="questionnaire.published" width="90" #default="{ row }">
         {{ publishedStatus(row.questionnaire) }}
       </el-table-column>
-      <el-table-column label="開始" prop="questionnaire.startDate"></el-table-column>
-      <el-table-column label="結束" prop="questionnaire.endDate"></el-table-column>
+      <el-table-column label="開始" prop="questionnaire.startDate" width="120"></el-table-column>
+      <el-table-column label="結束" prop="questionnaire.endDate" width="120"></el-table-column>
       <el-table-column label="編輯" width="60" #default="{ row }">
-        <i class="fa-solid fa-pencil" v-if="publishedStatus(row.questionnaire) === '未發布' || publishedStatus(row.questionnaire) === '未開始'" @click="goEdit(row)"></i>
+        <i class="fa-solid fa-pencil"
+          v-if="publishedStatus(row.questionnaire) === '未發布' || publishedStatus(row.questionnaire) === '未開始'"
+          @click="goEdit(row)"></i>
       </el-table-column>
       <el-table-column label="統計" width="60">
         <i class="fa-solid fa-square-poll-vertical"></i>
@@ -181,11 +182,13 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
     <el-dialog v-model="dialogSelection" @close="cancelDelete" width="800" center align-center>
       <el-table :data="selectedRows" stripe style="margin-bottom: 20px;">
         <el-table-column label="ID" prop="questionnaire.id" width="70"></el-table-column>
-        <el-table-column label="標題" prop="questionnaire.title" width="160"></el-table-column>
-        <el-table-column label="描述" prop="questionnaire.description" width="180"></el-table-column>
-        <el-table-column label="狀態" prop="questionnaire.published" width="90"></el-table-column>
-        <el-table-column label="開始" prop="questionnaire.startDate"></el-table-column>
-        <el-table-column label="結束" prop="questionnaire.endDate"></el-table-column>
+        <el-table-column label="標題" prop="questionnaire.title"></el-table-column>
+        <el-table-column label="描述" prop="questionnaire.description"></el-table-column>
+        <el-table-column label="狀態" prop="questionnaire.published" width="90" #default="{ row }">
+          {{ publishedStatus(row.questionnaire) }}
+        </el-table-column>
+        <el-table-column label="開始" prop="questionnaire.startDate" width="120"></el-table-column>
+        <el-table-column label="結束" prop="questionnaire.endDate" width="120"></el-table-column>
       </el-table>
       <template #footer>
         <span style="color: #6e4e23;font-weight: 700;font-size: 16pt;">刪除嗎?</span>
@@ -206,6 +209,19 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
   align-items: center;
   padding-top: 10px;
   position: relative;
+
+  .fa-circle-chevron-right {
+    font-size: 18pt;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    color: $maincolor;
+
+    &:hover {
+      color: #DBD3A4;
+      cursor: pointer;
+    }
+  }
 
   .fa-trash,
   .fa-square-plus {
@@ -305,6 +321,7 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
 
   /* table整個 */
   :deep(.el-table) {
+    margin-top: 20px;
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
     box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.28);
@@ -374,7 +391,7 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
 
   :deep(.el-pagination) {
     position: absolute;
-    bottom: 10px;
+    bottom: 90px;
   }
 
   // 分頁:上一頁按鈕、下一頁按鈕、其他所有按鈕

@@ -9,7 +9,7 @@ const title = ref('');
 const description = ref('');
 const startDate = ref('');
 const endDate = ref('');
-const questionList = ref([{ qTitle: '', type: '', isNecessary: true, options: [{ value: '' }, { value: '' }] }]);
+const questionList = ref([{ qTitle: '', optionType: '', necessary: true, options: [{ value: '' }, { value: '' }] }]);
 const isPublish = ref(false)
 const saveDialog = ref(false) // 打開是否確認返回對話框
 const router = useRouter()
@@ -38,8 +38,8 @@ const save = async () => {
         questionList: questionList.value.map((item, index) => ({
             quId: `${index + 1}`,
             qTitle: item.qTitle,
-            optionType: item.type,
-            necessary: item.isNecessary,
+            optionType: item.optionType,
+            necessary: item.necessary,
             option: item.options.map(option => option.value).join(';'),
         })),
     })
@@ -86,11 +86,11 @@ onMounted(() => {
             <div class="questionList" v-for="(questionItem, questionIndex) in questionList" :key="questionItem.id">
                 <div class="questionListInside">
                     <div class="qTitleAndNecessary">
-                        <p>{{ questionIndex + 1 + '. ' + questionItem.qTitle + ' (' + questionItem.type + ')' }}</p>
-                        <span v-if="questionItem.isNecessary" style="color: red;font-size:10pt">*[必填]</span>
+                        <p>{{ questionIndex + 1 + '. ' + questionItem.qTitle + ' (' + questionItem.optionType + ')' }}</p>
+                        <span v-if="questionItem.necessary" style="color: red;font-size:10pt">*[必填]</span>
                     </div>
                     <!-- 根據問題類型呈現選項 -->
-                    <div v-if="questionItem.type === '多選'">
+                    <div v-if="questionItem.optionType === '多選'">
                         <div class="option-checkbox" v-for="(option, optionIndex) in questionItem.options"
                             :key="optionIndex">
                             <el-checkbox v-model="option.value" disabled>{{ option.value }}</el-checkbox>
