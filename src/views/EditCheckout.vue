@@ -43,8 +43,8 @@ const save = async () => {
     ElMessage({ message: '修改成功', type: 'success', })
     // 清空本地数据
     sessionStorage.removeItem('formData')
-    // 返回
-    router.push('/')
+    // 回管理首頁
+    router.push('/managerHome')
 
 }
 

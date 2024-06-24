@@ -11,8 +11,10 @@ const isHoveredBack = ref(false);  // 綁hover時的樣式
 
 // 切換管理或用戶的頁面
 const activeRouterLink = () => {
-    currentPage.value = 1  // 讓當前頁回到第一頁
-    sessionStorage.setItem('currentPage', JSON.stringify(currentPage.value)) // 將當前頁存在sessionStorage
+    sessionStorage.removeItem('searchTitle') // 將searchTitle清空
+    sessionStorage.removeItem('searchStartDate') // 將searchStartDate清空
+    sessionStorage.removeItem('searchEndDate') // 將searchEndDate清空
+    sessionStorage.setItem('currentPage', JSON.stringify(currentPage.value = 1)) // 讓當前頁回到第一頁並存在sessionStorage
 }
 
 // 處理切換後的樣式
@@ -44,26 +46,32 @@ const hoverBackStyle = {
         <span
             style="font-size: 20pt;color: #A4804C;font-family: Georgia, 'Times New Roman', Times, serif;">Questionnaire</span>
         <br />
-        <div style="height: 2px;margin-top: 60px;background-color: #A4804C;"></div>
+        <div style="height: 2px;margin-top: 70px;background-color: #A4804C;"></div>
         <div class="routerItemArea" style="margin-top: 60px;">
 
-            <RouterLink :style="$route.path === '/' ? activeStyle : 'color: #A4804C', isHovered1 ? hoverStyle : ''" @click="activeRouterLink"
-                @mouseenter="isHovered1 = true" @mouseleave="isHovered1 = false" class="routerLinkItem1" :to="'/'"
+            <RouterLink :style="$route.path === '/' ? activeStyle : 'color: #A4804C', isHovered2 ? hoverStyle : ''"
+                @click="activeRouterLink" @mouseenter="isHovered2 = true" @mouseleave="isHovered2 = false"
+                class="routerLinkItem2" :to="'/'"
+                style="font-size:15pt;padding: 5px 145px 5px 110px;text-decoration: none;">
+                <i class="fa-solid fa-circle-user"></i>
+                <span class="routerText2" style="margin-left: 10px;">User</span>
+            </RouterLink>
+
+            <div style="height: 20px;"></div>
+
+            <RouterLink
+                :style="$route.path === '/managerHome' ? activeStyle : 'color: #A4804C', isHovered1 ? hoverStyle : ''"
+                @click="activeRouterLink" @mouseenter="isHovered1 = true" @mouseleave="isHovered1 = false"
+                class="routerLinkItem1" :to="'/managerHome'"
                 style="font-size:15pt;padding: 5px 110px;text-decoration: none;">
                 <i class="fa-solid fa-gear"></i>
                 <span class="routerText1" style="margin-left: 10px;">Manager</span>
             </RouterLink>
-            <div style="height: 20px;"></div>
-            <RouterLink :style="$route.path === '/userHome' ? activeStyle : 'color: #A4804C', isHovered2 ? hoverStyle : ''" @click="activeRouterLink"
-                @mouseenter="isHovered2 = true" @mouseleave="isHovered2 = false" class="routerLinkItem2"
-                :to="'/userHome'" style="font-size:15pt;padding: 5px 145px 5px 110px;text-decoration: none;">
-                <i class="fa-solid fa-circle-user"></i>
-                <span class="routerText2" style="margin-left: 10px;">User</span>
-            </RouterLink>
         </div>
         <template #footer>
-            <el-button link @click="drawer = false" :style="isHoveredBack ? hoverBackStyle : ''" 
-            @mouseenter="isHoveredBack = true" @mouseleave="isHoveredBack = false" style="font-size:15pt;margin-right:130px;color:#A4804C;">
+            <el-button link @click="drawer = false" :style="isHoveredBack ? hoverBackStyle : ''"
+                @mouseenter="isHoveredBack = true" @mouseleave="isHoveredBack = false"
+                style="font-size:15pt;margin-right:130px;color:#A4804C;">
                 <i class="fa-solid fa-circle-chevron-left" style="margin-right: 10px;"></i>Back</el-button>
         </template>
     </el-drawer>
@@ -71,8 +79,11 @@ const hoverBackStyle = {
 
 <style lang="scss" scoped>
 .fa-circle-chevron-right {
+    z-index: 999;
+    height: 30px;
     font-size: 18pt;
     color: $maincolor;
+    margin-top: 300px;
 
     &:hover {
         color: #DBD3A4;

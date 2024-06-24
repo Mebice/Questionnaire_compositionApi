@@ -46,8 +46,8 @@ const save = async () => {
     ElMessage({ message: '新增成功', type: 'success', })
     // 清空本地数据
     sessionStorage.removeItem('formData')
-    // 返回
-    router.push('/')
+    // 返回管理首頁
+    router.push('/managerHome')
 
 }
 

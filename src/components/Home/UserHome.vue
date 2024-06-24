@@ -1,6 +1,6 @@
 <script setup>
 import axios from 'axios';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter()
@@ -41,12 +41,12 @@ const search = async () => {
         sessionStorage.removeItem('searchEndDate')
     }
 }
+// 暫存查詢
 const loadSearch = () => {   // 讀取sessionStorage中的搜尋紀錄
     title.value = JSON.parse(sessionStorage.getItem('searchTitle'));
     startDate.value = JSON.parse(sessionStorage.getItem('searchStartDate'));
     endDate.value = JSON.parse(sessionStorage.getItem('searchEndDate'));
 }
-
 
 // 計算分頁
 const paginatedList = computed(() => {
@@ -61,6 +61,7 @@ const handleCurrentChange = (val) => {
     currentPage.value = val;
     sessionStorage.setItem('currentPage', JSON.stringify(currentPage.value)) // 將當前頁存在sessionStorage
 };
+// 暫存當前頁
 const loadCurrentPage = () => {   // 讀取存在sessionStorage中的當前頁
     if (sessionStorage.getItem('currentPage')) // 如果sessionStorage中存在當前頁
         currentPage.value = JSON.parse(sessionStorage.getItem('currentPage'))
@@ -77,12 +78,22 @@ const publishedStatus = (questionnaire) => {
     }
 }
 
+// 監聽 input 中新增或刪除的值
+watch([title, startDate, endDate], () => {
+    search()
+})
+
 onMounted(() => search(), loadCurrentPage(), loadSearch())
 </script>
 
 <template>
     <div class="bgArea">
         <div class="searchArea">
+            <i class="fa-solid fa-pen-to-square"
+                style="font-size: 20pt;margin-left:30px;margin-right: 10px;color: #fff;"></i>
+            <span
+                style="font-size: 18pt;margin-right: 30px;;color: #fff;font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">Questionnaire</span>
+            <div style="width: 2px;height: 50%;margin-right: 10px;background-color: #fff;"></div>
             <div class="searchTitle">
                 <span class="titleText">標題</span>
                 <el-input v-model="title" placeholder="請輸入關鍵字" clearable />
@@ -95,7 +106,7 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
                 <el-date-picker style="width:27%" v-model="endDate" type="date" placeholder="請選擇日期"
                     value-format="YYYY-MM-DD" />
 
-                <i class="fa-solid fa-magnifying-glass" @click="search"></i>
+                <i class="fa-solid fa-magnifying-glass"></i>
             </div>
         </div>
         <el-table class="main" :data="paginatedList" v-if="paginatedList.length > 0" stripe style="width: 990px;">
@@ -107,16 +118,9 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
             </el-table-column>
             <el-table-column label="開始" prop="questionnaire.startDate" width="120"></el-table-column>
             <el-table-column label="結束" prop="questionnaire.endDate" width="120"></el-table-column>
-            <el-table-column label="編輯" width="60" #default="{ row }">
-                <i class="fa-solid fa-pencil"
-                    v-if="publishedStatus(row.questionnaire) === '未發布' || publishedStatus(row.questionnaire) === '未開始'"
-                    @click="goEdit(row)"></i>
-            </el-table-column>
+            <el-table-column label="填寫" width="60"></el-table-column>
             <el-table-column label="統計" width="60">
                 <i class="fa-solid fa-square-poll-vertical"></i>
-            </el-table-column>
-            <el-table-column label="回饋" width="60">
-                <i class="fa-solid fa-file-lines"></i>
             </el-table-column>
         </el-table>
         <div v-else class="noTable">
@@ -132,51 +136,25 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
 
 <style lang="scss" scoped>
 .bgArea {
-    height: 600px;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding-top: 10px;
     position: relative;
-
-    .fa-circle-chevron-right {
-        font-size: 18pt;
-        position: absolute;
-        top: 60px;
-        left: 0;
-        color: $maincolor;
-
-        &:hover {
-            color: #DBD3A4;
-            cursor: pointer;
-        }
-    }
-
-    .fa-trash,
-    .fa-square-plus {
-        font-size: 18pt;
-        color: $maincolor;
-
-        &:hover {
-            color: #DBD3A4;
-            cursor: pointer;
-        }
-    }
+    margin-left: -25px;
 
     .searchArea {
-        width: 980px;
         height: 70px;
-        background-color: #fff;
-        border: thick double #dddddd;
-        box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.28);
+        background-color: $maincolor;
         display: flex;
-        margin-top: 20px;
+        align-items: center;
+        justify-content: center;
 
         .searchTitle {
             display: flex;
             align-items: center;
             padding: 0 10px;
-            color: $textcolor;
+            color: #fff;
             font-weight: 700;
 
             .titleText {
@@ -190,7 +168,6 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
                 margin-left: 10px;
                 padding-left: 10px;
                 border-radius: 5px;
-                background-color: #e2e8ee;
             }
 
             :deep(.el-input__inner) {
@@ -205,15 +182,11 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
         .searchDate {
             display: flex;
             align-items: center;
-            color: $textcolor;
+            color: #fff;
             font-weight: 700;
 
             span {
                 padding: 0 10px;
-            }
-
-            :deep(.el-input__wrapper) {
-                background-color: #e2e8ee;
             }
 
             :deep(.el-input__inner) {
@@ -232,18 +205,14 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
                 padding-left: 20px;
                 padding-right: 10px;
                 font-size: 20pt;
-                color: $maincolor;
-
-                &:hover {
-                    cursor: pointer;
-                    color: #DBD3A4;
-                }
+                color: #fff;
             }
         }
     }
 
     /* table整個 */
     :deep(.el-table) {
+        margin-top: 30px;
         font-family: 'Oswald', sans-serif;
         font-weight: 700;
         box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.28);
@@ -271,8 +240,6 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
         background-color: #f3eee7;
     }
 
-
-
     .fa-pencil {
         font-size: 10pt;
         color: $maincolor;
@@ -281,7 +248,6 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
             cursor: pointer;
             color: #e3c416;
         }
-
     }
 
     .fa-square-poll-vertical {
@@ -309,11 +275,6 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
         display: flex;
         align-items: center;
         color: $textcolor;
-    }
-
-    :deep(.el-pagination) {
-        position: absolute;
-        bottom: 10px;
     }
 
     // 分頁:上一頁按鈕、下一頁按鈕、其他所有按鈕
