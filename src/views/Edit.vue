@@ -121,7 +121,7 @@ const goNext = () => {
 const goBack = () => {
     sessionStorage.removeItem('formData')
     // 返回
-    router.push('/')
+    router.push('/managerHome')
 }
 
 onMounted(() => {

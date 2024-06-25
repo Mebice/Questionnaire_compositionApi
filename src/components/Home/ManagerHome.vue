@@ -128,7 +128,7 @@ const goEdit = (row) => {
 
 // 監聽 input 中新增或刪除的值
 watch([title, startDate, endDate], () => {
-    search()
+  search()
 })
 
 onMounted(() => search(), loadCurrentPage(), loadSearch())
@@ -186,6 +186,8 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
       v-model:current-page="currentPage" v-model:page-size="pageSize" layout="prev, pager, next, total, jumper"
       :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
 
+    <i class="fa-solid fa-gear"></i>
+
     <el-dialog v-model="dialogSelection" @close="cancelDelete" width="800" center align-center>
       <el-table :data="selectedRows" stripe style="margin-bottom: 20px;">
         <el-table-column label="ID" prop="questionnaire.id" width="70"></el-table-column>
@@ -227,6 +229,39 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
       cursor: pointer;
     }
   }
+
+  .fa-gear {
+    font-size: 18pt;
+    position: absolute;
+    top: 300px;
+    right: 35px;
+    padding: 8px;
+    border-radius: 50%;
+    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.38);
+    background-color: #fff;
+    color:  $maincolor;
+
+    &:hover {
+      color: #DBD3A4;
+      cursor: pointer;
+    }
+  }
+  // .fa-gear {
+  //   font-size: 18pt;
+  //   position: absolute;
+  //   top: 300px;
+  //   right: 35px;
+  //   padding: 8px;
+  //   border-radius: 50%;
+  //   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.38);
+  //   background-color: $maincolor;
+  //   color:  #fff;
+
+  //   &:hover {
+  //     background-color: #DBD3A4;
+  //     cursor: pointer;
+  //   }
+  // }
 
   .searchArea {
     height: 70px;

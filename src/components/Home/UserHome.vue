@@ -215,7 +215,7 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
         margin-top: 30px;
         font-family: 'Oswald', sans-serif;
         font-weight: 700;
-        box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.28);
+        box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.28);
     }
 
     /* table標題 */

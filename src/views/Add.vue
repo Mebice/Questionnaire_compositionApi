@@ -97,7 +97,7 @@ const goNext = () => {
 const goBack = () => {
     sessionStorage.removeItem('formData')
     // 返回
-    router.push('/')
+    router.push('/managerHome')
 }
 
 // 监听数据变化，优化监听，仅对特定字段进行深度监听
