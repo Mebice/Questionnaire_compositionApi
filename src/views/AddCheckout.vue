@@ -146,8 +146,7 @@ onMounted(() => {
         background-color: #ffffff;
         border-radius: 10px;
         box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, 0.28);
-        padding-top: 15px;
-        padding-bottom: 10px;
+        padding: 15px 0 10px;
         margin: 20px 0;
         color: #6e4e23;
         font-weight: 700;
@@ -155,6 +154,10 @@ onMounted(() => {
         h2 {
             height: 20px;
             margin-top: 10px;
+        }
+
+        p{
+            padding: 0 60px;
         }
     }
 

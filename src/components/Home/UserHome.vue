@@ -90,7 +90,7 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
     <div class="bgArea">
         <div class="searchArea">
             <i class="fa-solid fa-pen-to-square"
-                style="font-size: 20pt;margin-left:30px;margin-right: 10px;color: #fff;"></i>
+                style="font-size: 20pt;margin-left:40px;margin-right: 10px;color: #fff;"></i>
             <span
                 style="font-size: 18pt;margin-right: 30px;;color: #fff;font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">Questionnaire</span>
             <div style="width: 2px;height: 50%;margin-right: 10px;background-color: #fff;"></div>
@@ -109,10 +109,10 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
                 <i class="fa-solid fa-magnifying-glass"></i>
             </div>
         </div>
-        <el-table class="main" :data="paginatedList" v-if="paginatedList.length > 0" stripe style="width: 990px;">
+        <el-table class="main" :data="paginatedList" v-if="paginatedList.length > 0" stripe style="width: 99.9%;">
             <el-table-column label="ID" prop="questionnaire.id" width="70"></el-table-column>
-            <el-table-column label="標題" prop="questionnaire.title"></el-table-column>
-            <el-table-column label="描述" prop="questionnaire.description"></el-table-column>
+            <el-table-column label="標題" prop="questionnaire.title" show-overflow-tooltip></el-table-column>
+            <el-table-column label="描述" prop="questionnaire.description" width="400" show-overflow-tooltip></el-table-column>
             <el-table-column label="狀態" prop="questionnaire.published" width="90" #default="{ row }">
                 {{ publishedStatus(row.questionnaire) }}
             </el-table-column>
@@ -141,7 +141,6 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
     align-items: center;
     padding-top: 10px;
     position: relative;
-    margin-left: -25px;
 
     .searchArea {
         height: 70px;
@@ -212,7 +211,6 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
 
     /* table整個 */
     :deep(.el-table) {
-        margin-top: 30px;
         font-family: 'Oswald', sans-serif;
         font-weight: 700;
         box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.28);
@@ -223,6 +221,7 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
         text-align: center;
         padding: 7px 0;
         background-color: $maincolor;
+        opacity: 0.6;
         color: #ffffff;
         border-left: 1px solid #dddddd;
     }

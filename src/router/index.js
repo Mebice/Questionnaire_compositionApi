@@ -33,6 +33,10 @@ const router = createRouter({
       path: '/editCheckout',
       component: () => import('../views/EditCheckout.vue')
     },
+    {
+      path: '/preview',
+      component: () => import('../views/Preview.vue')
+    },
   ],
   // 路由滾動行為訂製
   scrollBehavior(){

@@ -50,7 +50,6 @@ const loadSearch = () => {   // 讀取sessionStorage中的搜尋紀錄
   endDate.value = JSON.parse(sessionStorage.getItem('searchEndDate'));
 }
 
-
 // 計算分頁
 const paginatedList = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value;
@@ -121,6 +120,10 @@ const cancelDelete = () => {
   search(); // 刷新数据
 }
 
+// 將數據傳至預覽頁
+const goPreview = (row) => {
+  router.push({ path: '/preview', query: { data: JSON.stringify(row) } });
+}
 // 將數據傳至編輯頁
 const goEdit = (row) => {
   router.push({ path: '/edit', query: { data: JSON.stringify(row) } });
@@ -137,7 +140,7 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
 <template>
   <div class="bgArea">
     <div class="searchArea">
-      <i class="fa-solid fa-pen-to-square" style="font-size: 20pt;margin-left:30px;margin-right: 10px;color: #fff;"></i>
+      <i class="fa-solid fa-pen-to-square" style="font-size: 20pt;margin-left:40px;margin-right: 10px;color: #fff;"></i>
       <span
         style="font-size: 18pt;margin-right: 30px;;color: #fff;font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">Questionnaire</span>
       <div style="width: 2px;height: 50%;margin-right: 10px;background-color: #fff;"></div>
@@ -156,16 +159,19 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
       </div>
     </div>
     <el-table class="main" :data="paginatedList" @selection-change="handleSelectionChange"
-      v-if="paginatedList.length > 0" stripe style="width: 990px;">
+      v-if="paginatedList.length > 0" stripe style="width: 99.9%;">
       <el-table-column v-if="showSelection" type="selection" width="50" />
       <el-table-column label="ID" prop="questionnaire.id" width="70"></el-table-column>
-      <el-table-column label="標題" prop="questionnaire.title"></el-table-column>
-      <el-table-column label="描述" prop="questionnaire.description"></el-table-column>
+      <el-table-column label="標題" prop="questionnaire.title" show-overflow-tooltip></el-table-column>
+      <el-table-column label="描述" prop="questionnaire.description" width="370" show-overflow-tooltip></el-table-column>
       <el-table-column label="狀態" prop="questionnaire.published" width="90" #default="{ row }">
         {{ publishedStatus(row.questionnaire) }}
       </el-table-column>
       <el-table-column label="開始" prop="questionnaire.startDate" width="120"></el-table-column>
       <el-table-column label="結束" prop="questionnaire.endDate" width="120"></el-table-column>
+      <el-table-column label="預覽" width="60" #default="{ row }">
+        <i class="fa-solid fa-eye" @click="goPreview(row)"></i>
+      </el-table-column>
       <el-table-column label="編輯" width="60" #default="{ row }">
         <i class="fa-solid fa-pencil"
           v-if="publishedStatus(row.questionnaire) === '未發布' || publishedStatus(row.questionnaire) === '未開始'"
@@ -182,17 +188,25 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
       <h3>無搜尋結果</h3>
     </div>
 
-    <el-pagination v-if="paginatedList.length > 0" background style="padding: 30px 0;"
-      v-model:current-page="currentPage" v-model:page-size="pageSize" layout="prev, pager, next, total, jumper"
-      :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+    <div class="paginationArea">
+      <el-pagination v-if="paginatedList.length > 0" background style="padding: 30px 0;"
+        v-model:current-page="currentPage" v-model:page-size="pageSize" layout="prev, pager, next, total, jumper"
+        :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+    </div>
 
-    <i class="fa-solid fa-gear"></i>
+    <details>
+      <summary><i class="fa-solid fa-gear"></i></summary>
+      <div class="expanded-content">
+        <i class="fa-solid fa-square-plus" @click="$router.push('/add')"></i>
+        <i class="fa-solid fa-trash" @click="onSelectionDelete"></i>
+      </div>
+    </details>
 
     <el-dialog v-model="dialogSelection" @close="cancelDelete" width="800" center align-center>
       <el-table :data="selectedRows" stripe style="margin-bottom: 20px;">
         <el-table-column label="ID" prop="questionnaire.id" width="70"></el-table-column>
-        <el-table-column label="標題" prop="questionnaire.title"></el-table-column>
-        <el-table-column label="描述" prop="questionnaire.description"></el-table-column>
+        <el-table-column label="標題" prop="questionnaire.title" show-overflow-tooltip></el-table-column>
+        <el-table-column label="描述" prop="questionnaire.description" show-overflow-tooltip></el-table-column>
         <el-table-column label="狀態" prop="questionnaire.published" width="90" #default="{ row }">
           {{ publishedStatus(row.questionnaire) }}
         </el-table-column>
@@ -217,7 +231,7 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
   align-items: center;
   padding-top: 10px;
   position: relative;
-  margin-left: -25px;
+  // margin-left: -10px;
 
   .fa-trash,
   .fa-square-plus {
@@ -230,38 +244,43 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
     }
   }
 
-  .fa-gear {
+  summary {
+    list-style: none;
     font-size: 18pt;
-    position: absolute;
-    top: 300px;
-    right: 35px;
-    padding: 8px;
+    z-index: 999;
+    position: fixed;
+    bottom: 50px;
+    right: 15px;
+    padding: 8px 8px 6px;
     border-radius: 50%;
+    border: none;
     box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.38);
-    background-color: #fff;
-    color:  $maincolor;
+    background-color: $maincolor;
+    color: #fff;
 
     &:hover {
-      color: #DBD3A4;
+      background-color: #DBD3A4;
       cursor: pointer;
     }
   }
-  // .fa-gear {
-  //   font-size: 18pt;
-  //   position: absolute;
-  //   top: 300px;
-  //   right: 35px;
-  //   padding: 8px;
-  //   border-radius: 50%;
-  //   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.38);
-  //   background-color: $maincolor;
-  //   color:  #fff;
 
-  //   &:hover {
-  //     background-color: #DBD3A4;
-  //     cursor: pointer;
-  //   }
-  // }
+  .expanded-content {
+    z-index: 99;
+    width: 60px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    bottom: 50px;
+    right: 15px;
+    padding-right: 55px;
+    padding-left: 20px;
+    border-radius: 30px;
+    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.38);
+    background-color: #fff;
+    color: $maincolor;
+  }
 
   .searchArea {
     height: 70px;
@@ -332,7 +351,6 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
 
   /* table整個 */
   :deep(.el-table) {
-    margin-top: 30px;
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
     box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.28);
@@ -343,6 +361,7 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
     text-align: center;
     padding: 7px 0;
     background-color: $maincolor;
+    opacity: 0.6;
     color: #ffffff;
     border-left: 1px solid #dddddd;
   }
@@ -361,7 +380,7 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
   }
 
   .fa-pencil {
-    font-size: 10pt;
+    font-size: 12pt;
     color: $maincolor;
 
     &:hover {
@@ -380,7 +399,7 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
     }
   }
 
-  .fa-file-lines {
+  .fa-file-lines,.fa-eye {
     font-size: 15pt;
     color: $maincolor;
 
@@ -397,6 +416,10 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
     color: $textcolor;
   }
 
+  .paginationArea{
+    padding: 0 34.3%;
+    background-color: #ffffff;
+  }
   // 分頁:上一頁按鈕、下一頁按鈕、其他所有按鈕
   :deep(.el-pagination.is-background .btn-next),
   :deep(.el-pagination.is-background .btn-prev),

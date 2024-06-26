@@ -83,7 +83,8 @@ const hoverBackStyle = {
     height: 30px;
     font-size: 18pt;
     color: $maincolor;
-    margin-top: 300px;
+    margin-top: 510px;
+    position: fixed;
 
     &:hover {
         color: #DBD3A4;

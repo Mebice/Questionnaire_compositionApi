@@ -192,6 +192,10 @@ onMounted(() => {
             height: 20px;
             margin-top: 10px;
         }
+
+        p{
+            padding: 0 60px;
+        }
     }
 
     .infoArea {
