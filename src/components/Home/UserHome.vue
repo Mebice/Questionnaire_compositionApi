@@ -78,6 +78,12 @@ const publishedStatus = (questionnaire) => {
     }
 }
 
+// 將數據傳至預覽頁
+const goAnswer = (row) => {
+    router.push({ path: '/answer', query: { data: JSON.stringify(row) } });
+}
+
+
 // 監聽 input 中新增或刪除的值
 watch([title, startDate, endDate], () => {
     search()
@@ -112,13 +118,17 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
         <el-table class="main" :data="paginatedList" v-if="paginatedList.length > 0" stripe style="width: 99.9%;">
             <el-table-column label="ID" prop="questionnaire.id" width="70"></el-table-column>
             <el-table-column label="標題" prop="questionnaire.title" show-overflow-tooltip></el-table-column>
-            <el-table-column label="描述" prop="questionnaire.description" width="400" show-overflow-tooltip></el-table-column>
+            <el-table-column label="描述" prop="questionnaire.description" width="400"
+                show-overflow-tooltip></el-table-column>
             <el-table-column label="狀態" prop="questionnaire.published" width="90" #default="{ row }">
                 {{ publishedStatus(row.questionnaire) }}
             </el-table-column>
             <el-table-column label="開始" prop="questionnaire.startDate" width="120"></el-table-column>
             <el-table-column label="結束" prop="questionnaire.endDate" width="120"></el-table-column>
-            <el-table-column label="填寫" width="60"></el-table-column>
+            <el-table-column label="填寫" width="60" #default="{ row }">
+                <i class="fa-solid fa-pen-to-square" v-if="publishedStatus(row.questionnaire) === '進行中'"
+                    @click="goAnswer(row)"></i>
+            </el-table-column>
             <el-table-column label="統計" width="60">
                 <i class="fa-solid fa-square-poll-vertical"></i>
             </el-table-column>
@@ -239,27 +249,8 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
         background-color: #f3eee7;
     }
 
-    .fa-pencil {
-        font-size: 10pt;
-        color: $maincolor;
-
-        &:hover {
-            cursor: pointer;
-            color: #e3c416;
-        }
-    }
-
-    .fa-square-poll-vertical {
-        font-size: 15pt;
-        color: $maincolor;
-
-        &:hover {
-            cursor: pointer;
-            color: #e3c416;
-        }
-    }
-
-    .fa-file-lines {
+    .fa-square-poll-vertical,
+    .fa-pen-to-square {
         font-size: 15pt;
         color: $maincolor;
 

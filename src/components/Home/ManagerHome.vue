@@ -124,6 +124,7 @@ const cancelDelete = () => {
 const goPreview = (row) => {
   router.push({ path: '/preview', query: { data: JSON.stringify(row) } });
 }
+
 // 將數據傳至編輯頁
 const goEdit = (row) => {
   router.push({ path: '/edit', query: { data: JSON.stringify(row) } });
@@ -188,12 +189,14 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
       <h3>無搜尋結果</h3>
     </div>
 
+    <!-- 分頁 -->
     <div class="paginationArea">
       <el-pagination v-if="paginatedList.length > 0" background style="padding: 30px 0;"
         v-model:current-page="currentPage" v-model:page-size="pageSize" layout="prev, pager, next, total, jumper"
         :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
     </div>
 
+    <!-- 點擊時展開內容 -->
     <details>
       <summary><i class="fa-solid fa-gear"></i></summary>
       <div class="expanded-content">
@@ -202,6 +205,7 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
       </div>
     </details>
 
+    <!-- 刪除彈窗 -->
     <el-dialog v-model="dialogSelection" @close="cancelDelete" width="800" center align-center>
       <el-table :data="selectedRows" stripe style="margin-bottom: 20px;">
         <el-table-column label="ID" prop="questionnaire.id" width="70"></el-table-column>

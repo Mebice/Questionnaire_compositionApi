@@ -37,6 +37,14 @@ const router = createRouter({
       path: '/preview',
       component: () => import('../views/Preview.vue')
     },
+    {
+      path: '/answer',
+      component: () => import('../views/Answer.vue')
+    },
+    {
+      path: '/answerCheckout',
+      component: () => import('../views/AnswerCheckout.vue')
+    },
   ],
   // 路由滾動行為訂製
   scrollBehavior(){

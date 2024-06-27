@@ -1,7 +1,6 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';  // 提示框
 import 'element-plus/theme-chalk/el-message.css' // 提示框樣式
 
@@ -132,7 +131,7 @@ onMounted(() => {
 <template>
     <div class="bgArea">
         <div class="form-container">
-            <h3>編輯問卷</h3>
+            <i class="fa-solid fa-pencil"><span style="margin-left: 10px;">編輯問卷</span></i>
             <!-- {{ formData }} -->
             <div class="inside">
                 <label for="questionnaireTitle">標題 : </label>
@@ -217,8 +216,12 @@ onMounted(() => {
         border-radius: 8px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 
-        h3 {
-            text-align: center;
+        .fa-pencil {
+            font-size: 14pt;
+            display: flex;
+            justify-content: center;
+            padding-top: 30px;
+            padding-bottom: 10px;
         }
 
         .inside {

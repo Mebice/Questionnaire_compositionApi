@@ -122,7 +122,7 @@ onMounted(() => {
 <template>
     <div class="bgArea">
         <div class="form-container">
-            <h3>新增問卷</h3>
+            <i class="fa-solid fa-plus"><span style="margin-left: 10px;">新增問卷</span></i>
             <div class="inside">
                 <label for="questionnaireTitle">標題 : </label>
                 <el-input v-model="title" placeholder="請輸入標題" clearable />
@@ -207,8 +207,12 @@ onMounted(() => {
         border-radius: 8px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 
-        h3 {
-            text-align: center;
+        .fa-plus {
+            font-size: 14pt;
+            display: flex;
+            justify-content: center;
+            padding-top: 30px;
+            padding-bottom: 10px;
         }
 
         .inside {
