@@ -21,7 +21,9 @@ const returnDialog = ref(false) // 打開是否確認返回對話框
 
 // 将选项字符串拆分为数组
 formData.value.questionList.forEach(question => {
-    question.options = question.option.split(';').map(option => ({ value: option }));
+    if(!question.options){ // 處理從確認頁返回時的選項，一開始建立的是沒有options，option分號拆開才有options的
+        question.options = question.option.split(';').map(option => ({ value: option }));
+    }
 });
 
 // 初始化删除题目列表
@@ -77,10 +79,7 @@ const saveToSessionStorage = () => {
 
 // 在页面加载时从 sessionStorage 加载数据
 const loadFromSessionStorage = () => {
-    const storedData = sessionStorage.getItem('formData');
-    if (storedData) {
-        Object.assign(formData.value, JSON.parse(storedData));
-    }
+    const formData = JSON.parse(sessionStorage.getItem('formData'))
 };
 
 // 监听 formData 变化，保存到 sessionStorage

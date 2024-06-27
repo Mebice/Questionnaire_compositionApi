@@ -45,7 +45,6 @@ const save = async () => {
     sessionStorage.removeItem('formData')
     // 回管理首頁
     router.push('/managerHome')
-
 }
 
 // 从本地存储加载
@@ -63,29 +62,6 @@ const loadFromSessionStorage = () => {
     }
 };
 
-// 保存数据到本地存储並返回，目的是為了讓 options: [{ value: '' }, { value: '' } 變成 option: item.options.map(option => option.value).join(';')的形式儲存至sessionStorage並返回上一頁
-const goBack = () => {
-    const formData = {
-        questionnaire: {
-            id: id.value,
-            title: title.value,
-            description: description.value,
-            published: published.value,
-            startDate: startDate.value,
-            endDate: endDate.value,
-        },
-        questionList: questionList.value.map(item => ({
-            ...item,
-            option: item.options.map(option => option.value).join(';')
-        })),
-        deleteQuestionList: deleteQuestionList.value.map(item => ({
-            ...item,
-        })),
-    };
-    sessionStorage.setItem('formData', JSON.stringify(formData));
-    router.push('/edit')
-};
-
 onMounted(() => {
     loadFromSessionStorage();
 });
@@ -98,23 +74,6 @@ onMounted(() => {
             <p>{{ startDate + ' ~ ' + endDate }}</p>
             <h2>{{ title }}</h2>
             <p>{{ description }}</p>
-        </div>
-        <div class="infoArea">
-            <div class="personalInfoContentArea">
-                <div class="infoTop">基本資料</div>
-                <div class="personalInfoContent">
-                    <label for="">姓名</label>
-                    <input type="text" :disabled="true">
-                    <label for="">手機</label>
-                    <input type="text" :disabled="true">
-                </div>
-                <div class="personalInfoContent">
-                    <label for="">信箱</label>
-                    <input type="text" :disabled="true">
-                    <label for="">年齡</label>
-                    <input type="text" :disabled="true">
-                </div>
-            </div>
         </div>
         <div class="questionListArea">
             <!-- 顯示題目列表 -->
@@ -143,7 +102,7 @@ onMounted(() => {
                 </div>
             </div>
             <div class="btnArea">
-                <i class="fa-solid fa-arrow-left" @click="goBack"></i>
+                <i class="fa-solid fa-arrow-left" @click="$router.push('/edit')"></i>
                 <el-checkbox v-model="published" label="發布問卷" />
                 <i class="fa-solid fa-floppy-disk" @click="saveDialog = true"></i>
                 <!-- 彈出是否確認儲存對話框 -->
@@ -195,48 +154,6 @@ onMounted(() => {
 
         p{
             padding: 0 60px;
-        }
-    }
-
-    .infoArea {
-        width: 850px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, 0.28);
-        padding: 2% 0 2% 0;
-        margin-bottom: 20px;
-        color: #6e4e23;
-        font-weight: 700;
-
-        .infoTop {
-            width: 100%;
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .personalInfoContentArea {
-            width: 790px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            border: 2px solid #ede9e6;
-            border-radius: 10px;
-
-            .personalInfoContent {
-                margin-left: 55px;
-                padding: 0 0 3% 0;
-
-                input {
-                    width: 250px;
-                    height: 18px;
-                    margin: 0 60px 0 10px;
-                    padding-left: 5px;
-                    border-radius: 7px;
-                }
-            }
         }
     }
 

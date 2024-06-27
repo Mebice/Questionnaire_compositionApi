@@ -20,8 +20,7 @@ const dialogSelection = ref(false); // 控制对话框的显示
 // 查詢
 const search = async () => {
   if (title.value || startDate.value || endDate.value) { // 當標題或開始時間或結束時間有值時
-    currentPage.value = 1  // 讓當前頁回到第一頁
-    sessionStorage.setItem('currentPage', JSON.stringify(currentPage.value)) // 將當前頁存在sessionStorage
+        sessionStorage.setItem('currentPage', JSON.stringify(currentPage.value = 1)) // 讓當前頁回到第一頁存在sessionStorage
   }
   const response = await axios.get(`http://localhost:8080/api/quiz/search`, {
     params: {
@@ -32,6 +31,7 @@ const search = async () => {
   })
 
   list.value = response.data.quizVo;
+  list.value.sort((a, b) => new Date(b.questionnaire.startDate) - new Date(a.questionnaire.startDate)); // 按開始時間从新到旧排序
   total.value = list.value.length; // 總數據量设为返回的数据长度
 
   if (title.value || startDate.value || endDate.value) { // 當搜尋欄有值時
@@ -164,7 +164,7 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
       <el-table-column v-if="showSelection" type="selection" width="50" />
       <el-table-column label="ID" prop="questionnaire.id" width="70"></el-table-column>
       <el-table-column label="標題" prop="questionnaire.title" show-overflow-tooltip></el-table-column>
-      <el-table-column label="描述" prop="questionnaire.description" width="370" show-overflow-tooltip></el-table-column>
+      <el-table-column label="描述" prop="questionnaire.description" max-width="300" show-overflow-tooltip></el-table-column>
       <el-table-column label="狀態" prop="questionnaire.published" width="90" #default="{ row }">
         {{ publishedStatus(row.questionnaire) }}
       </el-table-column>
@@ -190,11 +190,9 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
     </div>
 
     <!-- 分頁 -->
-    <div class="paginationArea">
       <el-pagination v-if="paginatedList.length > 0" background style="padding: 30px 0;"
         v-model:current-page="currentPage" v-model:page-size="pageSize" layout="prev, pager, next, total, jumper"
         :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
-    </div>
 
     <!-- 點擊時展開內容 -->
     <details>
@@ -420,10 +418,6 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
     color: $textcolor;
   }
 
-  .paginationArea{
-    padding: 0 34.3%;
-    background-color: #ffffff;
-  }
   // 分頁:上一頁按鈕、下一頁按鈕、其他所有按鈕
   :deep(.el-pagination.is-background .btn-next),
   :deep(.el-pagination.is-background .btn-prev),

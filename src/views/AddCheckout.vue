@@ -64,23 +64,6 @@ onMounted(() => {
             <h2>{{ title }}</h2>
             <p>{{ description }}</p>
         </div>
-        <div class="infoArea">
-            <div class="personalInfoContentArea">
-                <div class="infoTop">基本資料</div>
-                <div class="personalInfoContent">
-                    <label for="">姓名</label>
-                    <input type="text" :disabled="true">
-                    <label for="">手機</label>
-                    <input type="text" :disabled="true">
-                </div>
-                <div class="personalInfoContent">
-                    <label for="">信箱</label>
-                    <input type="text" :disabled="true">
-                    <label for="">年齡</label>
-                    <input type="text" :disabled="true">
-                </div>
-            </div>
-        </div>
         <div class="questionListArea">
             <!-- 顯示題目列表 -->
             <div class="questionList" v-for="(questionItem, questionIndex) in questionList" :key="questionItem.id">
@@ -158,48 +141,6 @@ onMounted(() => {
 
         p{
             padding: 0 60px;
-        }
-    }
-
-    .infoArea {
-        width: 850px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, 0.28);
-        padding: 2% 0 2% 0;
-        margin-bottom: 20px;
-        color: #6e4e23;
-        font-weight: 700;
-
-        .infoTop {
-            width: 100%;
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .personalInfoContentArea {
-            width: 790px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            border: 2px solid #ede9e6;
-            border-radius: 10px;
-
-            .personalInfoContent {
-                margin-left: 55px;
-                padding: 0 0 3% 0;
-
-                input {
-                    width: 250px;
-                    height: 18px;
-                    margin: 0 60px 0 10px;
-                    padding-left: 5px;
-                    border-radius: 7px;
-                }
-            }
         }
     }
 

@@ -15,8 +15,7 @@ const pageSize = ref(10); // 每頁顯示數量
 // 查詢
 const search = async () => {
     if (title.value || startDate.value || endDate.value) { // 當標題或開始時間或結束時間有值時
-        currentPage.value = 1  // 讓當前頁回到第一頁
-        sessionStorage.setItem('currentPage', JSON.stringify(currentPage.value)) // 將當前頁存在sessionStorage
+        sessionStorage.setItem('currentPage', JSON.stringify(currentPage.value = 1)) // 讓當前頁回到第一頁存在sessionStorage
     }
     const response = await axios.get(`http://localhost:8080/api/quiz/search`, {
         params: {
@@ -28,6 +27,7 @@ const search = async () => {
 
     let result = response.data.quizVo;
     result = result.filter(item => item.questionnaire.published); // 过滤掉未發布的問卷
+    result.sort((a, b) => new Date(b.questionnaire.startDate) - new Date(a.questionnaire.startDate)); // 按開始時間从新到旧排序
     list.value = result;
     total.value = list.value.length; // 總數據量设为返回的数据长度
 
@@ -118,7 +118,7 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
         <el-table class="main" :data="paginatedList" v-if="paginatedList.length > 0" stripe style="width: 99.9%;">
             <el-table-column label="ID" prop="questionnaire.id" width="70"></el-table-column>
             <el-table-column label="標題" prop="questionnaire.title" show-overflow-tooltip></el-table-column>
-            <el-table-column label="描述" prop="questionnaire.description" width="400"
+            <el-table-column label="描述" prop="questionnaire.description" width="370"
                 show-overflow-tooltip></el-table-column>
             <el-table-column label="狀態" prop="questionnaire.published" width="90" #default="{ row }">
                 {{ publishedStatus(row.questionnaire) }}
