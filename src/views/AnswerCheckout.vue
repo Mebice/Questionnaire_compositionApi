@@ -4,27 +4,34 @@ import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { ElMessage } from 'element-plus';  // 提示框
 import 'element-plus/theme-chalk/el-message.css' // 提示框樣式
+import { v4 as uuidv4 } from 'uuid';  // 引入 UUID 庫
 
 const router = useRouter()
 const userAnswerData = ref({}); // 綁定用戶答案數據
 const formData = ref({})
 const saveDialog = ref(false) // 打開是否確認返回對話框
 
+// 生成唯一的流水號
+const userId = uuidv4(); // 使用 UUID 作為流水號
+
 const save = async () => {
     const allAns = userAnswerData.value.answers.map(question => {
         if (question.radioOption) {
-            return { quId: question.quId, selected: question.radioOption };
+            return { quId: question.quId, selected: question.radioOption, userId: userId };
         } else {
             const selectedOptions = question.options.filter(option => option.checked).map(option => option.value).join(';')
-            return { quId: question.quId, selected: selectedOptions }
+            return { quId: question.quId, selected: selectedOptions, userId: userId }
         }
     });
     // console.log(allAns);
-    for (const answer of allAns) {
-        // console.log(answer.quId)
-        // console.log(answer.selected)
+    // const allQuId = allAns.map(ans => ans.quId).join('|')  // 不同的題號以分號相接
+    // const allAnswers = allAns.map(ans => ans.selected).join('|')  // 不同題目作答以|相隔
+    // console.log(allQuId,allAnswers)
+    for (const answer of allAns) {  // 題目分開存儲
+        // console.log(answer.quId, answer.selected)
         await axios.post('http://localhost:8080/api/user/create', {
             user: {
+                userId: userId, // 添加使用者流水號
                 name: userAnswerData.value.name,
                 phoneNumber: userAnswerData.value.phone,
                 email: userAnswerData.value.email,
@@ -35,6 +42,7 @@ const save = async () => {
             }
         })
         ElMessage({ message: '提交成功', type: 'success', })
+        
         // 清空本地数据
         sessionStorage.removeItem('formData')
         sessionStorage.removeItem('userAnswerData')
