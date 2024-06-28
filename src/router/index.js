@@ -45,6 +45,10 @@ const router = createRouter({
       path: '/answerCheckout',
       component: () => import('../views/AnswerCheckout.vue')
     },
+    {
+      path: '/feedBack',
+      component: () => import('../views/FeedBack.vue')
+    },
   ],
   // 路由滾動行為訂製
   scrollBehavior(){

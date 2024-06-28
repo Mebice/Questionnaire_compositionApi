@@ -29,25 +29,27 @@ const save = async () => {
     // console.log(allQuId,allAnswers)
     for (const answer of allAns) {  // 題目分開存儲
         // console.log(answer.quId, answer.selected)
-        await axios.post('http://localhost:8080/api/user/create', {
-            user: {
-                userId: userId, // 添加使用者流水號
-                name: userAnswerData.value.name,
-                phoneNumber: userAnswerData.value.phone,
-                email: userAnswerData.value.email,
-                age: userAnswerData.value.age,
-                questionnaireId: userAnswerData.value.qnId,
-                questionId: answer.quId,
-                ans: answer.selected
-            }
-        })
-        ElMessage({ message: '提交成功', type: 'success', })
-        
-        // 清空本地数据
-        sessionStorage.removeItem('formData')
-        sessionStorage.removeItem('userAnswerData')
-        // 回管理首頁
-        router.push('/')
+        if (answer.selected) {  // 如果有選擇答案的情況下
+            await axios.post('http://localhost:8080/api/user/create', {
+                user: {
+                    userId: userId, // 添加使用者流水號
+                    name: userAnswerData.value.name,
+                    phoneNumber: userAnswerData.value.phone,
+                    email: userAnswerData.value.email,
+                    age: userAnswerData.value.age,
+                    questionnaireId: userAnswerData.value.qnId,
+                    questionId: answer.quId,
+                    ans: answer.selected
+                }
+            })
+            ElMessage({ message: '提交成功', type: 'success', })
+
+            // 清空本地数据
+            sessionStorage.removeItem('formData')
+            sessionStorage.removeItem('userAnswerData')
+            // 回管理首頁
+            router.push('/')
+        }
     }
 }
 

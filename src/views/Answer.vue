@@ -1,6 +1,8 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus';  // 引入 Element Plus 的消息提示
+import 'element-plus/theme-chalk/el-message.css'; // 引入 Element Plus 消息提示样式
 
 const route = useRoute();
 const router = useRouter();
@@ -60,6 +62,36 @@ const goBack = () => {
     sessionStorage.removeItem('userAnswerData');
     // 返回
     router.push('/');
+};
+
+// 检查是否有未填写的必填题目
+const checkNecessary = () => {
+    let necessaryList = []; // 放置必填題目
+    formData.value.questionList.forEach((question, questionIndex) => {  // 蒐集必填題目
+        if (question.necessary) {
+            if (question.optionType === '單選' && !question.radioOption) {
+                necessaryList.push(`${questionIndex + 1}. ${question.qTitle}`);
+            }
+            if (question.optionType === '多選' && !question.options.some(option => option.checked)) {
+                necessaryList.push(`${questionIndex + 1}. ${question.qTitle}`);
+            }
+        }
+    });
+    if (necessaryList.length > 0) {
+        ElMessage({
+            message: `以下必填题目未填写: \n${necessaryList.join('\n')}`,
+            type: 'warning',
+        });
+        return false;
+    }
+    return true;
+};
+
+// 跳转到下一页并检查必填题目
+const goNext = () => {
+    if (checkNecessary()) {
+        router.push('/answerCheckout');
+    }
 };
 
 // 监听数据变化，优化监听，仅对特定字段进行深度监听
@@ -158,7 +190,7 @@ onMounted(() => {
                     </template>
                 </el-dialog>
                 <!-- 到下一頁確認頁 -->
-                <i class="fa-solid fa-arrow-right" @click="$router.push('/answerCheckout')"></i>
+                <i class="fa-solid fa-arrow-right" @click="goNext"></i>
             </div>
         </div>
     </div>
