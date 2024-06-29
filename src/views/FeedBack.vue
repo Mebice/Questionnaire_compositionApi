@@ -4,17 +4,45 @@ import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
-const formData = ref(JSON.parse(route.query.data));
-const feedBackData = ref(JSON.parse(route.query.feedBackData));
-const total = ref(feedBackData.value.length); // 總數據量
+const formData = ref(JSON.parse(route.query.data || sessionStorage.getItem('formData')));  // 問卷數據
+const feedBackData = ref(JSON.parse(route.query.feedBackData || sessionStorage.getItem('feedBackData')));  // 所有user 數據
+const total = ref(0); // 總數據量
 const currentPage = ref(1); // 當前頁碼
 const pageSize = ref(10); // 每頁顯示數量
+
+// 合併相同 userId 的資料
+const mergeFeedBackData = (data) => {
+    const mergedData = {};
+
+    data.forEach(item => {
+        if (!mergedData[item.userId]) {
+            mergedData[item.userId] = {
+                userId: item.userId,
+                name: item.name,
+                phoneNumber: item.phoneNumber,
+                email: item.email,
+                age: item.age,
+                dateTime: item.dateTime,
+                answers: []
+            };
+        }
+        mergedData[item.userId].answers.push({
+            questionId: item.questionId,
+            ans: item.ans
+        });
+    });
+    return Object.values(mergedData);
+};
+
+const mergedFeedBackData = ref(mergeFeedBackData(feedBackData.value));
+// console.log(mergedFeedBackData.value)
+total.value = mergedFeedBackData.value.length; // 更新總數據量
 
 // 計算分頁
 const paginatedList = computed(() => {
     const start = (currentPage.value - 1) * pageSize.value;
     const end = start + pageSize.value;
-    return feedBackData.value.slice(start, end);
+    return mergedFeedBackData.value.slice(start, end);
 });
 const handleSizeChange = (val) => {
     pageSize.value = val;
@@ -32,29 +60,37 @@ const loadCurrentPage = () => {   // 讀取存在sessionStorage中的當前頁
 const goBack = () => {
     sessionStorage.setItem('currentPage', JSON.stringify(currentPage.value = 1)) // 讓當前頁回到第一頁存在sessionStorage
     sessionStorage.removeItem('formData')
+    sessionStorage.removeItem('feedBackData')
     router.push('/managerHome')
 }
 
-onMounted(() =>
+// 回饋頁
+const goRecord = (row) => {
+    router.push({ path: '/record', query: { data: JSON.stringify(row) } });
+}
+
+onMounted(() => {
     // 根据 dateTime 属性对 userStatistics 数组进行排序
-    feedBackData.value.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime)),
-    loadCurrentPage(),
+    mergedFeedBackData.value.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
+    loadCurrentPage();
     // 存儲到 sessionStorage
-    sessionStorage.setItem('formData', JSON.stringify(formData.value))
-)
+    sessionStorage.setItem('formData', JSON.stringify(formData.value));
+    sessionStorage.setItem('feedBackData', JSON.stringify(feedBackData.value));
+});
 </script>
+
 
 <template>
     <div class="bgArea">
         <!-- {{ formData }} -->
         <!-- {{ feedBackData }} -->
         <el-table class="main" :data="paginatedList" stripe style="width:800px">
-            <el-table-column label="ID" prop="userId" show-overflow-tooltip></el-table-column>
+            <el-table-column label="USER ID" prop="userId" show-overflow-tooltip></el-table-column>
             <el-table-column label="姓名" prop="name"></el-table-column>
             <el-table-column label="電子信箱" prop="email"></el-table-column>
             <el-table-column label="填寫時間" prop="dateTime" width="180"></el-table-column>
-            <el-table-column label="作答紀錄" width="90">
-                <i class="fa-solid fa-right-to-bracket"></i>
+            <el-table-column label="作答紀錄" width="90" #default="{ row }">
+                <i class="fa-solid fa-right-to-bracket" @click="goRecord(row)"></i>
             </el-table-column>
         </el-table>
         <!-- 分頁 -->
@@ -63,7 +99,6 @@ onMounted(() =>
             @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         <div class="btnArea">
             <i class="fa-solid fa-circle-chevron-left" @click="goBack">
-                <!-- <i class="fa-solid fa-circle-chevron-left" @click="$router.push('/managerHome')"> -->
             </i><span class="backText">Back</span>
         </div>
     </div>

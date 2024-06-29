@@ -1,77 +1,45 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
-import { ElMessage } from 'element-plus';  // 提示框
-import 'element-plus/theme-chalk/el-message.css' // 提示框樣式
-import { v4 as uuidv4 } from 'uuid';  // 引入 UUID 庫
+import { ref } from 'vue';
+import { useRoute } from 'vue-router';
 
-const router = useRouter()
-const userAnswerData = ref({}); // 綁定用戶答案數據
-const formData = ref({})
-const saveDialog = ref(false) // 打開是否確認返回對話框
+const route = useRoute()
+const formData = ref((JSON.parse(sessionStorage.getItem('formData')))) // sessionStorage解析問卷數據
+const recordData = ref(JSON.parse(route.query.data)); // query傳遞 該 user 詳細數據
 
-// 生成唯一的流水號
-const userId = uuidv4(); // 使用 UUID 作為流水號
+// 将选项option字符串拆分为数组options
+formData.value.questionList.forEach(question => {
+    question.options = question.option.split(';').map(option => ({ value: option, checked: false }));
+    if (question.optionType === '單選') {
+        question.radioOption = ''; // 初始化单选题选项
+    }
+});
 
-const save = async () => {
-    const allAns = userAnswerData.value.answers.map(question => {
-        if (question.radioOption) {
-            return { quId: question.quId, selected: question.radioOption, userId: userId };
-        } else {
-            const selectedOptions = question.options.filter(option => option.checked).map(option => option.value).join(';')
-            return { quId: question.quId, selected: selectedOptions, userId: userId }
-        }
-    });
-    // console.log(allAns);
-    // const allQuId = allAns.map(ans => ans.quId).join('|')  // 不同的題號以分號相接
-    // const allAnswers = allAns.map(ans => ans.selected).join('|')  // 不同題目作答以|相隔
-    // console.log(allQuId,allAnswers)
-    for (const answer of allAns) {  // 題目分開存儲
-        // console.log(answer.quId, answer.selected)
-        if (answer.selected) {  // 如果有選擇答案的情況下
-            await axios.post('http://localhost:8080/api/user/create', {
-                user: {
-                    userId: userId, // 添加使用者流水號
-                    name: userAnswerData.value.name,
-                    phoneNumber: userAnswerData.value.phone,
-                    email: userAnswerData.value.email,
-                    age: userAnswerData.value.age,
-                    questionnaireId: userAnswerData.value.qnId,
-                    questionId: answer.quId,
-                    ans: answer.selected
+// 将recordData中的答案应用到问卷题目中
+recordData.value.answers.forEach(answer => {
+    const question = formData.value.questionList.find(q => q.quId === answer.questionId);
+    if (question) {
+        if (question.optionType === '多選') {
+            question.options.forEach(option => {
+                if (answer.ans.includes(option.value)) {
+                    option.checked = true;
                 }
-            })
-            ElMessage({ message: '提交成功', type: 'success', })
-
-            // 清空本地数据
-            sessionStorage.removeItem('formData')
-            sessionStorage.removeItem('userAnswerData')
-            // 回管理首頁
-            router.push('/')
+            });
+        } else if (question.optionType === '單選') {
+            question.radioOption = answer.ans;
         }
     }
-}
-
-// 从本地存储加载数据
-const loadFromSessionStorage = () => {
-    userAnswerData.value = JSON.parse(sessionStorage.getItem('userAnswerData'));
-    formData.value = JSON.parse(sessionStorage.getItem('formData'));
-};
-
-onMounted(() => {
-    // 从本地存储加载数据
-    loadFromSessionStorage();
 });
 </script>
 
 <template>
+    <!-- {{ formData }}
+    recordData : {{ recordData }} -->
     <div class="bgArea">
         <!-- 顯示問卷基本信息 -->
         <div class="titleArea">
-            <p>{{ formData.questionnaire?.startDate + ' ~ ' + formData.questionnaire?.endDate }}</p>
-            <h2>{{ formData.questionnaire?.title }}</h2>
-            <p>{{ formData.questionnaire?.description }}</p>
+            <p>{{ formData.questionnaire.startDate + ' ~ ' + formData.questionnaire.endDate }}</p>
+            <h2>{{ formData.questionnaire.title }}</h2>
+            <p>{{ formData.questionnaire.description }}</p>
         </div>
         <div class="infoArea">
             <div class="personalInfoContentArea">
@@ -79,19 +47,19 @@ onMounted(() => {
                 <div class="personalInfoContent">
                     <div class="infoinputArea">
                         <label for="">姓名</label>
-                        <el-input v-model="userAnswerData.name" disabled />
+                        <el-input v-model="recordData.name" disabled />
                     </div>
                     <div class="infoinputArea">
                         <label for="">手機</label>
-                        <el-input v-model="userAnswerData.phone" disabled />
+                        <el-input v-model="recordData.phone" disabled />
                     </div>
                     <div class="infoinputArea">
                         <label for="">信箱</label>
-                        <el-input v-model="userAnswerData.email" disabled />
+                        <el-input v-model="recordData.email" disabled />
                     </div>
                     <div class="infoinputArea">
                         <label for="">年齡</label>
-                        <el-input v-model="userAnswerData.age" disabled />
+                        <el-input :value="recordData.age === 0 ? '' : recordData.age" disabled />
                     </div>
                 </div>
             </div>
@@ -123,24 +91,10 @@ onMounted(() => {
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="btnArea">
-            <i class="fa-solid fa-arrow-left" @click="$router.push('/answer')"></i>
-            <i class="fa-solid fa-floppy-disk" @click="saveDialog = true"></i>
-            <!-- 彈出是否確認儲存對話框 -->
-            <el-dialog v-model="saveDialog" width="500" align-center center>
-                <div class="content" style="display: flex; justify-content: center;padding-bottom:10px;">
-                    <i class="fa-solid fa-circle-question"
-                        style="color: #6e4e23;font-size: 20pt;margin-right: 10px;"></i>
-                    <span style="color: #6e4e23;font-weight: 700;font-size: 16pt">提交作答嗎 ?</span>
-                </div>
-                <template #footer>
-                    <div class="dialog-footer">
-                        <el-button @click="saveDialog = false">取消</el-button>
-                        <el-button type="primary" @click="save">確認</el-button>
-                    </div>
-                </template>
-            </el-dialog>
+            <div class="btnArea">
+                <i class="fa-solid fa-circle-chevron-left" @click="$router.push('/feedBack')">
+                </i><span class="backText">Back</span>
+            </div>
         </div>
     </div>
 </template>
@@ -305,102 +259,24 @@ onMounted(() => {
     }
 
     .btnArea {
-        width: 850px;
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding-bottom: 20px;
+        color: $maincolor;
 
-        :deep(.el-checkbox__inner) {
-            border: 1px solid $textcolor;
-        }
-
-        :deep(.el-checkbox__label) {
-            font-size: 12pt;
-            font-weight: 700;
-            color: $textcolor;
-        }
-
-        .fa-arrow-left {
+        .fa-circle-chevron-left {
             font-size: 20pt;
-            position: relative;
-            margin-bottom: 50px;
-            transition: all 0.5s ease;
             border-radius: 50%;
             padding: 12px;
-            margin: 0 60px;
+            margin: -10px 0 10px;
 
             &:hover {
-                background-color: rgba(143, 143, 143, 0.804);
+                opacity: 0.6;
                 cursor: pointer;
-            }
-
-            /* 使用伪元素添加文字 */
-            &::after {
-                content: '上一頁';
-                color: rgb(255, 255, 255);
-                font-size: 10pt;
-                display: block;
-                position: absolute;
-                top: 50%;
-                /* 相对于父元素垂直居中 */
-                left: 50%;
-                /* 相对于父元素水平居中 */
-                transform: translate(-50%, -50%);
-                /* 平移并旋转文字 */
-                opacity: 0;
-                /* 初始状态透明 */
-                transition: opacity 0.3s ease;
-                /* 添加过渡效果 */
-                white-space: nowrap;
-                /* 防止文字换行 */
-            }
-
-            &:hover::after {
-                opacity: 1;
             }
         }
 
-        .fa-floppy-disk {
-            // color: rgba(161, 158, 158, 0.804);
-            // background-color: rgba(211, 211, 211, 0.804);
-            font-size: 20pt;
-            position: relative;
-            margin-bottom: 50px;
-            margin: 0 60px;
-            transition: all 0.5s ease;
-            border-radius: 50%;
-            padding: 12px 15px;
-
-            &:hover {
-                background-color: rgba(143, 143, 143, 0.804);
-                cursor: pointer;
-            }
-
-            /* 使用伪元素添加文字 */
-            &::after {
-                content: '儲存';
-                color: white;
-                font-size: 10pt;
-                display: block;
-                position: absolute;
-                top: 50%;
-                /* 相对于父元素垂直居中 */
-                left: 50%;
-                /* 相对于父元素水平居中 */
-                transform: translate(-50%, -50%);
-                /* 平移并旋转文字 */
-                opacity: 0;
-                /* 初始状态透明 */
-                transition: opacity 0.3s ease;
-                /* 添加过渡效果 */
-                white-space: nowrap;
-                /* 防止文字换行 */
-            }
-
-            &:hover::after {
-                opacity: 1;
-            }
+        .backText {
+            font-size: 13pt;
+            margin-top: 5px;
         }
     }
 }

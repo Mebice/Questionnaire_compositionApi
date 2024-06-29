@@ -49,6 +49,10 @@ const router = createRouter({
       path: '/feedBack',
       component: () => import('../views/FeedBack.vue')
     },
+    {
+      path: '/record',
+      component: () => import('../views/Record.vue')
+    },
   ],
   // 路由滾動行為訂製
   scrollBehavior(){

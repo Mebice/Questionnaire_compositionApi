@@ -166,7 +166,7 @@ onMounted(() => {
                         <div class="option-radio" v-for="(option, optionIndex) in questionItem.options"
                             :key="optionIndex">
                             <el-radio-group v-model="questionItem.radioOption">
-                                <el-radio :label="option.value">{{ option.value }}</el-radio>
+                                <el-radio :value="option.value">{{ option.value }}</el-radio>
                             </el-radio-group>
                         </div>
                     </div>
