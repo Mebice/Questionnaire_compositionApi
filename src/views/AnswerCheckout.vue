@@ -24,9 +24,6 @@ const save = async () => {
         }
     });
     // console.log(allAns);
-    // const allQuId = allAns.map(ans => ans.quId).join('|')  // 不同的題號以分號相接
-    // const allAnswers = allAns.map(ans => ans.selected).join('|')  // 不同題目作答以|相隔
-    // console.log(allQuId,allAnswers)
     for (const answer of allAns) {  // 題目分開存儲
         // console.log(answer.quId, answer.selected)
         if (answer.selected) {  // 如果有選擇答案的情況下
@@ -42,15 +39,14 @@ const save = async () => {
                     ans: answer.selected
                 }
             })
-            ElMessage({ message: '提交成功', type: 'success', })
-
-            // 清空本地数据
-            sessionStorage.removeItem('formData')
-            sessionStorage.removeItem('userAnswerData')
-            // 回管理首頁
-            router.push('/')
         }
     }
+    ElMessage({ message: '提交成功', type: 'success', })
+    // 清空本地数据
+    sessionStorage.removeItem('formData')
+    sessionStorage.removeItem('userAnswerData')
+    // 回管理首頁
+    router.push('/')
 }
 
 // 从本地存储加载数据
