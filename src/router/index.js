@@ -53,6 +53,10 @@ const router = createRouter({
       path: '/record',
       component: () => import('../views/Record.vue')
     },
+    {
+      path: '/statistics',
+      component: () => import('../views/Statistics.vue')
+    },
   ],
   // 路由滾動行為訂製
   scrollBehavior(){

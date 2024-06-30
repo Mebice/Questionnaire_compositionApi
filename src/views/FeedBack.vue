@@ -5,13 +5,13 @@ import { useRoute, useRouter } from 'vue-router';
 const route = useRoute();
 const router = useRouter();
 const formData = ref(JSON.parse(route.query.data || sessionStorage.getItem('formData')));  // 問卷數據
-const feedBackData = ref(JSON.parse(route.query.feedBackData || sessionStorage.getItem('feedBackData')));  // 所有user 數據
+const userData = ref(JSON.parse(route.query.userData || sessionStorage.getItem('userData')));  // 所有user 數據
 const total = ref(0); // 總數據量
 const currentPage = ref(1); // 當前頁碼
 const pageSize = ref(10); // 每頁顯示數量
 
 // 合併相同 userId 的資料
-const mergeFeedBackData = (data) => {
+const mergeUserData = (data) => {
     const mergedData = {};
 
     data.forEach(item => {
@@ -34,15 +34,15 @@ const mergeFeedBackData = (data) => {
     return Object.values(mergedData);
 };
 
-const mergedFeedBackData = ref(mergeFeedBackData(feedBackData.value));
-// console.log(mergedFeedBackData.value)
-total.value = mergedFeedBackData.value.length; // 更新總數據量
+const mergedUserData = ref(mergeUserData(userData.value));
+// console.log(mergedUserData.value)
+total.value = mergedUserData.value.length; // 更新總數據量
 
 // 計算分頁
 const paginatedList = computed(() => {
     const start = (currentPage.value - 1) * pageSize.value;
     const end = start + pageSize.value;
-    return mergedFeedBackData.value.slice(start, end);
+    return mergedUserData.value.slice(start, end);
 });
 const handleSizeChange = (val) => {
     pageSize.value = val;
@@ -60,7 +60,7 @@ const loadCurrentPage = () => {   // 讀取存在sessionStorage中的當前頁
 const goBack = () => {
     sessionStorage.setItem('currentPage', JSON.stringify(currentPage.value = 1)) // 讓當前頁回到第一頁存在sessionStorage
     sessionStorage.removeItem('formData')
-    sessionStorage.removeItem('feedBackData')
+    sessionStorage.removeItem('userData')
     router.push('/managerHome')
 }
 
@@ -71,11 +71,11 @@ const goRecord = (row) => {
 
 onMounted(() => {
     // 根据 dateTime 属性对 userStatistics 数组进行排序
-    mergedFeedBackData.value.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
+    mergedUserData.value.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
     loadCurrentPage();
     // 存儲到 sessionStorage
     sessionStorage.setItem('formData', JSON.stringify(formData.value));
-    sessionStorage.setItem('feedBackData', JSON.stringify(feedBackData.value));
+    sessionStorage.setItem('userData', JSON.stringify(userData.value));
 });
 </script>
 
@@ -83,7 +83,7 @@ onMounted(() => {
 <template>
     <div class="bgArea">
         <!-- {{ formData }} -->
-        <!-- {{ feedBackData }} -->
+        <!-- {{ userData }} -->
         <el-table class="main" :data="paginatedList" stripe style="width:800px">
             <el-table-column label="USER ID" prop="userId" show-overflow-tooltip></el-table-column>
             <el-table-column label="姓名" prop="name"></el-table-column>
