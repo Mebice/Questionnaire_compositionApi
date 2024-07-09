@@ -78,11 +78,23 @@ const publishedStatus = (questionnaire) => {
     }
 }
 
-// 將數據傳至預覽頁
+// 將數據傳至作答頁
 const goAnswer = (row) => {
     router.push({ path: '/answer', query: { data: JSON.stringify(row) } });
 }
 
+// 將數據傳至統計頁
+const goUserList = async (row) => {
+    const questionnaireId = row.questionnaire.id
+    const response = await axios.get(`http://localhost:8080/api/user/searchByQuestionnaireId?questionnaireId=${questionnaireId}`)
+    const userData = response.data.userList;
+    if (userData.length > 0) {
+        // 將查詢結果與原數據一起傳遞到統計頁面
+        router.push({ path: '/statistics', query: { data: JSON.stringify(row), userData: JSON.stringify(userData) } })
+    } else {
+        ElMessage.warning('暫無數據')
+    }
+}
 
 // 監聽 input 中新增或刪除的值
 watch([title, startDate, endDate], () => {
@@ -129,8 +141,10 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
                 <i class="fa-solid fa-pen-to-square" v-if="publishedStatus(row.questionnaire) === '進行中'"
                     @click="goAnswer(row)"></i>
             </el-table-column>
-            <el-table-column label="統計" width="60">
-                <i class="fa-solid fa-square-poll-vertical"></i>
+            <el-table-column label="統計" width="60" #default="{ row }">
+                <i class="fa-solid fa-square-poll-vertical"
+                    v-if="publishedStatus(row.questionnaire) === '進行中' || publishedStatus(row.questionnaire) === '已結束'"
+                    @click="goUserList(row)"></i>
             </el-table-column>
         </el-table>
         <div v-else class="noTable">

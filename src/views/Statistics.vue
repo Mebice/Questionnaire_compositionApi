@@ -1,58 +1,175 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { AgCharts } from 'ag-charts-community';
+
+import { use } from 'echarts/core';
+import { CanvasRenderer } from 'echarts/renderers';
+import { PieChart, BarChart } from 'echarts/charts';
+import {
+    TitleComponent,
+    TooltipComponent,
+    LegendComponent,
+    GridComponent,
+} from 'echarts/components';
+import VChart from 'vue-echarts';
+
+use([
+    CanvasRenderer,
+    PieChart,
+    BarChart,
+    TitleComponent,
+    TooltipComponent,
+    LegendComponent,
+    GridComponent,
+]);
 
 const route = useRoute();
 const formData = ref(JSON.parse(route.query.data));  // 問卷數據
 const userData = ref(JSON.parse(route.query.userData));  // 所有user 數據
 
-const chartContainer = ref(null);
-const chartOptions = ref({
-    container: null,
-    data: [
-        { category: 'A', value: 30 },
-        { category: 'B', value: 80 },
-        { category: 'C', value: 45 },
-        { category: 'D', value: 60 },
-        { category: 'E', value: 20 },
-        { category: 'F', value: 90 },
-        { category: 'G', value: 75 },
-    ],
-    series: [{
-        type: 'bar',
-        xKey: 'category',
-        yKey: 'value',
-        fill: ({ datum }) => datum.color,
-    }],
-    title: {
-        text: 'Sample Bar Chart'
+const chartValue = ref('pie')  // 綁定選擇圓餅圖或長條圖的選項，默認為圓餅圖
+const chartType = [ // 綁定選項的值和標籤
+    {
+        value: 'pie',
+        label: '圓餅圖',
     },
-    legend: {
-        enabled: false
-    },
-    axes: [{
-        type: 'category',
-        position: 'bottom',
-    }, {
-        type: 'number',
-        position: 'left'
-    }]
+    {
+        value: 'bar',
+        label: '長條圖',
+    }
+]
+
+// 将选项字符串拆分为数组
+formData.value.questionList.forEach(question => {
+    question.options = question.option.split(';').map(option => ({ value: option }));
 });
 
-onMounted(() => {
-    if (chartContainer.value) {
-        chartOptions.value.container = chartContainer.value;
-        AgCharts.create(chartOptions.value);
-    }
-})
-</script>
+// 合併相同 userId 的資料
+const mergeUserData = (userData) => {
+    const mergedData = {}; // 放置合併資料的地方
 
+    userData.forEach(item => {
+        mergedData[item.userId] = {
+            userId: item.userId,
+            ...item
+        };
+    });
+    return Object.values(mergedData);
+};
+const mergedUserData = ref(mergeUserData(userData.value));
+
+
+// 生成每个问题的饼图配置
+const chartOptions = computed(() => {
+    const questionAnswers = formData.value.questionList.map(question => {
+        const answerCounts = {};
+
+        userData.value.forEach(user => {
+            if (user.questionId === question.quId) {
+                if (question.optionType === '多選') {
+                    // 多选题需要分割答案并分别统计
+                    const answers = user.ans.split(';');
+                    answers.forEach(answer => {
+                        if (answer in answerCounts) {
+                            answerCounts[answer]++;
+                        } else {
+                            answerCounts[answer] = 1;
+                        }
+                    });
+                } else {
+                    // 单选题直接统计
+                    const answer = user.ans;
+                    if (answer in answerCounts) {
+                        answerCounts[answer]++;
+                    } else {
+                        answerCounts[answer] = 1;
+                    }
+                }
+            }
+        });
+
+        const data = Object.entries(answerCounts).map(([name, value]) => ({ name, value }));
+
+        if (chartValue.value === 'pie') {
+            return {
+                // title: {
+                //     text: question.qTitle,
+                //     left: 'center',
+                // },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b} : {c} ({d}%)',
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                    data: data.map(item => item.name),
+                },
+                series: [
+                    {
+                        name: question.qTitle,
+                        type: 'pie',
+                        radius: '55%',
+                        center: ['50%', '60%'],
+                        data,
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)',
+                            },
+                        },
+                    },
+                ],
+            }
+        } else {
+            return {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: question.options.map(option => option.value),
+                    axisLabel: {
+                        interval: 0,
+                        rotate: 45, // 标签旋转角度
+                        formatter: function (value) {
+                            // 标签自动换行
+                            return value.split(" ").join("\n");
+                        }
+                    },
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        name: question.qTitle,
+                        type: 'bar',
+                        data: question.options.map(option => answerCounts[option.value] || 0),
+                    },
+                ],
+            };
+        }
+    });
+    return questionAnswers;
+})
+
+</script>
 
 <template>
     <div class="bgArea">
-        <!-- {{ formData }}
-        {{ userData }} -->
+        <!-- {{ formData.questionList }} -->
+        <!-- {{ userData }} -->
         <!-- 顯示問卷基本信息 -->
         <div class="titleArea">
             <p>{{ formData.questionnaire.startDate + ' ~ ' + formData.questionnaire.endDate }}</p>
@@ -60,6 +177,10 @@ onMounted(() => {
             <p>{{ formData.questionnaire.description }}</p>
         </div>
         <div class="questionListArea">
+
+            <span class="ansText"> 作答人數 : {{ mergedUserData.length }} 人</span>
+
+
             <!-- 顯示題目列表 -->
             <div class="questionList" v-for="(questionItem, questionIndex) in formData.questionList"
                 :key="questionItem.id">
@@ -70,6 +191,35 @@ onMounted(() => {
                         <span v-if="questionItem.necessary" style="color: red;font-size:10pt">*[必填]</span>
                     </div>
 
+                    <div class="contentArea">
+
+                        <!-- 根據問題類型呈現選項 -->
+                        <div v-if="questionItem.optionType === '多選'">
+                            <div class="option-checkbox" v-for="(option, optionIndex) in questionItem.options"
+                                :key="optionIndex">
+                                <el-checkbox v-model="option.value" disabled>{{ option.value }}</el-checkbox>
+                            </div>
+                        </div>
+                        <div v-else>
+                            <div class="option-radio" v-for="(option, optionIndex) in questionItem.options"
+                                :key="optionIndex">
+                                <el-radio-group v-model="option.value" disabled>
+                                    <el-radio value="option">{{ option.value }}</el-radio>
+                                </el-radio-group>
+                            </div>
+                        </div>
+
+                        <el-select v-model="chartValue" class="chartSelect" placeholder="Select" style="width: 90px">
+                            <el-option v-for="item in chartType" :key="item.value" :label="item.label"
+                                :value="item.value" />
+                        </el-select>
+
+                        <!-- 顯示每個問題對應的圖表 -->
+                        <v-chart v-if="chartValue === 'pie'" class="pieChart" :option="chartOptions[questionIndex]"
+                            autoresize />
+                        <v-chart v-if="chartValue === 'bar'" class="barChart" :option="chartOptions[questionIndex]"
+                            autoresize />
+                    </div>
                 </div>
             </div>
             <div class="btnArea">
@@ -77,8 +227,6 @@ onMounted(() => {
                 </i><span class="backText">Back</span>
             </div>
         </div>
-
-        <div id="myChart" ref="chartContainer" style="width: 800px; height: 600px;"></div>
     </div>
 </template>
 
@@ -125,6 +273,10 @@ onMounted(() => {
         color: #6e4e23;
         font-weight: 700;
 
+        .ansText {
+            margin-bottom: 20px;
+        }
+
         .questionList {
             width: 93%;
             background-color: #fff;
@@ -138,6 +290,49 @@ onMounted(() => {
                 .qTitleAndNecessary {
                     display: flex;
                     align-items: center;
+                }
+            }
+
+            .contentArea {
+                display: flex;
+                justify-content: space-between;
+
+                :deep(.el-checkbox__inner),
+                :deep(.el-radio__inner) {
+                    // 複選框和單選框
+                    border: 1px solid $textcolor;
+                }
+
+                :deep(.el-checkbox__label),
+                :deep(.el-radio__label) {
+                    // 複選框和單選框文字
+                    font-weight: 700;
+                    color: $textcolor;
+                }
+
+                .chartSelect {
+                    z-index: 999;
+                    position: absolute;
+                    right: 240px;
+                }
+
+                :deep(.el-select__wrapper) {
+                    box-shadow: 0 0 0 1px $textcolor inset;
+                }
+
+                :deep(.el-select__caret) {
+                    color: $textcolor;
+                }
+
+                .pieChart {
+                    width: 450px;
+                    height: 300px;
+                    margin-right: -50px;
+                }
+
+                .barChart {
+                    width: 350px;
+                    height: 300px;
                 }
             }
         }

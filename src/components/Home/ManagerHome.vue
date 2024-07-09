@@ -130,13 +130,13 @@ const goEdit = (row) => {
   router.push({ path: '/edit', query: { data: JSON.stringify(row) } });
 }
 
-// 將數據傳至回饋頁
-const goFeedBack = async (row, path) => {
+// 將數據傳至統計或回饋頁
+const goUserList = async (row, path) => {
   const questionnaireId = row.questionnaire.id
   const response = await axios.get(`http://localhost:8080/api/user/searchByQuestionnaireId?questionnaireId=${questionnaireId}`)
   const userData = response.data.userList;
   if (userData.length > 0) {
-    // 將查詢結果與原數據一起傳遞到回饋頁面
+    // 將查詢結果與原數據一起傳遞到統計或回饋頁面
     router.push({ path, query: { data: JSON.stringify(row), userData: JSON.stringify(userData) } })
   } else {
     ElMessage.warning('暫無數據')
@@ -195,12 +195,12 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
       <el-table-column label="統計" width="60"  #default="{ row }">
         <i class="fa-solid fa-square-poll-vertical"
         v-if="publishedStatus(row.questionnaire) === '進行中' || publishedStatus(row.questionnaire) === '已結束'"
-          @click="goFeedBack(row, '/statistics')"></i>
+          @click="goUserList(row, '/statistics')"></i>
       </el-table-column>
       <el-table-column label="回饋" width="60" #default="{ row }">
         <i class="fa-solid fa-file-lines"
           v-if="publishedStatus(row.questionnaire) === '進行中' || publishedStatus(row.questionnaire) === '已結束'"
-          @click="goFeedBack(row, '/feedBack')"></i>
+          @click="goUserList(row, '/feedBack')"></i>
       </el-table-column>
     </el-table>
     <div v-else class="noTable">

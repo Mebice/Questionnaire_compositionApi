@@ -51,7 +51,7 @@ recordData.value.answers.forEach(answer => {
                     </div>
                     <div class="infoinputArea">
                         <label for="">手機</label>
-                        <el-input v-model="recordData.phone" disabled />
+                        <el-input v-model="recordData.phoneNumber" disabled />
                     </div>
                     <div class="infoinputArea">
                         <label for="">信箱</label>
