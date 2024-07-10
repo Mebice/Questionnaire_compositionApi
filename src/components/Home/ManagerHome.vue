@@ -19,10 +19,11 @@ const dialogSelection = ref(false); // 控制对话框的显示
 
 // 查詢
 const search = async () => {
-  if (title.value || startDate.value || endDate.value) { // 當標題或開始時間或結束時間有值時
+  if (title.value || startDate.value || endDate.value) { // 當標題或開始時間或結束時間存在時
     sessionStorage.setItem('currentPage', JSON.stringify(currentPage.value = 1)) // 讓當前頁回到第一頁存在sessionStorage
   }
-  const response = await axios.get(`http://localhost:8080/api/quiz/search`, {
+
+  const response = await axios.get(`http://localhost:8080/api/quiz/searchQuestionnaireList`, {
     params: {
       title: title.value,
       start_date: startDate.value,
@@ -30,8 +31,8 @@ const search = async () => {
     }
   })
 
-  list.value = response.data.quizVo;
-  list.value.sort((a, b) => new Date(b.questionnaire.startDate) - new Date(a.questionnaire.startDate)); // 按開始時間从新到旧排序
+  list.value = response.data.questionnaireList
+  list.value.sort((a, b) => new Date(b.startDate) - new Date(a.startDate)); // 按開始時間从新到旧排序
   total.value = list.value.length; // 總數據量设为返回的数据长度
 
   if (title.value || startDate.value || endDate.value) { // 當搜尋欄有值時
@@ -69,12 +70,12 @@ const loadCurrentPage = () => {   // 讀取存在sessionStorage中的當前頁
 }
 
 // 問卷的狀態
-const publishedStatus = (questionnaire) => {
-  if (!questionnaire.published) {
+const publishedStatus = (row) => {
+  if (!row.published) {
     return '未發布';
-  } else if (new Date(questionnaire.startDate) > new Date()) {
+  } else if (new Date(row.startDate) > new Date()) {
     return '未開始';
-  } else if (new Date(questionnaire.endDate) < new Date()) {
+  } else if (new Date(row.endDate) < new Date()) {
     return '已結束';
   } else {
     return '進行中';
@@ -175,31 +176,28 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
     <el-table class="main" :data="paginatedList" @selection-change="handleSelectionChange"
       v-if="paginatedList.length > 0" stripe style="width: 99.9%;">
       <el-table-column v-if="showSelection" type="selection" width="50" />
-      <el-table-column label="ID" prop="questionnaire.id" width="70"></el-table-column>
-      <el-table-column label="標題" prop="questionnaire.title" show-overflow-tooltip></el-table-column>
-      <el-table-column label="描述" prop="questionnaire.description" max-width="300"
-        show-overflow-tooltip></el-table-column>
-      <el-table-column label="狀態" prop="questionnaire.published" width="90" #default="{ row }">
-        {{ publishedStatus(row.questionnaire) }}
+      <el-table-column label="ID" prop="id" width="70"></el-table-column>
+      <el-table-column label="標題" prop="title" show-overflow-tooltip></el-table-column>
+      <el-table-column label="描述" prop="description" max-width="300" show-overflow-tooltip></el-table-column>
+      <el-table-column label="狀態" prop="published" width="90" #default="{ row }">
+        {{ publishedStatus(row) }}
       </el-table-column>
-      <el-table-column label="開始" prop="questionnaire.startDate" width="120"></el-table-column>
-      <el-table-column label="結束" prop="questionnaire.endDate" width="120"></el-table-column>
+      <el-table-column label="開始" prop="startDate" width="120"></el-table-column>
+      <el-table-column label="結束" prop="endDate" width="120"></el-table-column>
       <el-table-column label="預覽" width="60" #default="{ row }">
         <i class="fa-solid fa-eye" @click="goPreview(row)"></i>
       </el-table-column>
       <el-table-column label="編輯" width="60" #default="{ row }">
-        <i class="fa-solid fa-pencil"
-          v-if="publishedStatus(row.questionnaire) === '未發布' || publishedStatus(row.questionnaire) === '未開始'"
+        <i class="fa-solid fa-pencil" v-if="publishedStatus(row) === '未發布' || publishedStatus(row) === '未開始'"
           @click="goEdit(row)"></i>
       </el-table-column>
-      <el-table-column label="統計" width="60"  #default="{ row }">
+      <el-table-column label="統計" width="60" #default="{ row }">
         <i class="fa-solid fa-square-poll-vertical"
-        v-if="publishedStatus(row.questionnaire) === '進行中' || publishedStatus(row.questionnaire) === '已結束'"
+          v-if="publishedStatus(row) === '進行中' || publishedStatus(row) === '已結束'"
           @click="goUserList(row, '/statistics')"></i>
       </el-table-column>
       <el-table-column label="回饋" width="60" #default="{ row }">
-        <i class="fa-solid fa-file-lines"
-          v-if="publishedStatus(row.questionnaire) === '進行中' || publishedStatus(row.questionnaire) === '已結束'"
+        <i class="fa-solid fa-file-lines" v-if="publishedStatus(row) === '進行中' || publishedStatus(row) === '已結束'"
           @click="goUserList(row, '/feedBack')"></i>
       </el-table-column>
     </el-table>
