@@ -1,29 +1,36 @@
 <script setup>
-import { ref } from 'vue';
+import { getQuestionListAPI } from '@/apis/api'
+import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute()
-const formData = ref(JSON.parse(route.query.data));
+const questionnaire = ref(JSON.parse(route.query.data));
+const questionList = ref([])
+// 依據問卷ID獲取題目列表
+const getQuestionList = async () => {
+    const res = await getQuestionListAPI(route.params.id)
+    questionList.value = res.data.questionList
 
-// 将选项字符串拆分为数组
-formData.value.questionList.forEach(question => {
-    question.options = question.option.split(';').map(option => ({ value: option }));
-});
+    // 将选项字符串拆分为数组
+    questionList.value.forEach(question => {
+        question.options = question.option.split(';').map(option => ({ value: option }));
+    });
+}
 
+onMounted(() => getQuestionList())
 </script>
 
 <template>
     <div class="bgArea">
         <!-- 顯示問卷基本信息 -->
         <div class="titleArea">
-            <p>{{ formData.questionnaire.startDate + ' ~ ' + formData.questionnaire.endDate }}</p>
-            <h2>{{ formData.questionnaire.title }}</h2>
-            <p>{{ formData.questionnaire.description }}</p>
+            <p>{{ questionnaire.startDate + ' ~ ' + questionnaire.endDate }}</p>
+            <h2>{{ questionnaire.title }}</h2>
+            <p>{{ questionnaire.description }}</p>
         </div>
         <div class="questionListArea">
             <!-- 顯示題目列表 -->
-            <div class="questionList" v-for="(questionItem, questionIndex) in formData.questionList"
-                :key="questionItem.id">
+            <div class="questionList" v-for="(questionItem, questionIndex) in questionList" :key="questionItem.quId">
                 <div class="questionListInside">
                     <div class="qTitleAndNecessary">
                         <p>{{ questionIndex + 1 + '. ' + questionItem.qTitle + ' (' + questionItem.optionType + ')' }}

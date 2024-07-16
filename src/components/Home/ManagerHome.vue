@@ -1,5 +1,7 @@
 <script setup>
 import axios from 'axios';
+import { getQuestionnaireListAPI } from '@/apis/api'
+import { getQuestionListAPI } from '@/apis/api'
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';  // 提示框
@@ -23,12 +25,10 @@ const search = async () => {
     sessionStorage.setItem('currentPage', JSON.stringify(currentPage.value = 1)) // 讓當前頁回到第一頁存在sessionStorage
   }
 
-  const response = await axios.get(`http://localhost:8080/api/quiz/searchQuestionnaireList`, {
-    params: {
-      title: title.value,
-      start_date: startDate.value,
-      end_date: endDate.value
-    }
+  const response = await getQuestionnaireListAPI({
+    title: title.value,
+    start_date: startDate.value,
+    end_date: endDate.value
   })
 
   list.value = response.data.questionnaireList
@@ -45,6 +45,7 @@ const search = async () => {
     sessionStorage.removeItem('searchEndDate')
   }
 }
+
 const loadSearch = () => {   // 讀取sessionStorage中的搜尋紀錄
   title.value = JSON.parse(sessionStorage.getItem('searchTitle'));
   startDate.value = JSON.parse(sessionStorage.getItem('searchStartDate'));
@@ -64,7 +65,8 @@ const handleCurrentChange = (val) => {
   currentPage.value = val;
   sessionStorage.setItem('currentPage', JSON.stringify(currentPage.value)) // 將當前頁存在sessionStorage
 };
-const loadCurrentPage = () => {   // 讀取存在sessionStorage中的當前頁
+// 讀取存在sessionStorage中的當前頁
+const loadCurrentPage = () => {
   if (sessionStorage.getItem('currentPage')) // 如果sessionStorage中存在當前頁
     currentPage.value = JSON.parse(sessionStorage.getItem('currentPage'))
 }
@@ -93,13 +95,13 @@ const onSelectionDelete = () => {
       showSelection.value = false;  // 如果已经打开选择列但没有选中的行，则关闭选择列
     }
   }
-};
+}
 
 // 選擇的某行
 const handleSelectionChange = (selection) => {
   selectedRows.value = selection;
   // console.log('Selected Rows:', selectedRows.value);
-};
+}
 
 // 刪除
 const goDelete = async () => {
@@ -121,24 +123,32 @@ const cancelDelete = () => {
   search(); // 刷新数据
 }
 
-// 將數據傳至預覽頁
-const goPreview = (row) => {
-  router.push({ path: '/preview', query: { data: JSON.stringify(row) } });
+// 依據問卷ID獲取題目列表
+const getQuestionList = async (row) => {
+  const res = await getQuestionListAPI(row.id)
+  const questionList = res.data.questionList
+  return {
+    questionnaire: row,
+    questionList: questionList
+  }
 }
 
+// 調用題目列表API
 // 將數據傳至編輯頁
-const goEdit = (row) => {
-  router.push({ path: '/edit', query: { data: JSON.stringify(row) } });
+const goEdit = async (row) => {
+  const data = await getQuestionList(row);
+  router.push({ path: '/edit', query: { data: JSON.stringify(data) } });
 }
 
 // 將數據傳至統計或回饋頁
-const goUserList = async (row, path) => {
-  const questionnaireId = row.questionnaire.id
+const userList = async (row, path) => {
+  const questionnaireId = row.id
   const response = await axios.get(`http://localhost:8080/api/user/searchByQuestionnaireId?questionnaireId=${questionnaireId}`)
   const userData = response.data.userList;
+  const data = await getQuestionList(row);
   if (userData.length > 0) {
     // 將查詢結果與原數據一起傳遞到統計或回饋頁面
-    router.push({ path, query: { data: JSON.stringify(row), userData: JSON.stringify(userData) } })
+    router.push({ path, query: { data: JSON.stringify(data), userData: JSON.stringify(userData) } })
   } else {
     ElMessage.warning('暫無數據')
   }
@@ -185,20 +195,25 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
       <el-table-column label="開始" prop="startDate" width="120"></el-table-column>
       <el-table-column label="結束" prop="endDate" width="120"></el-table-column>
       <el-table-column label="預覽" width="60" #default="{ row }">
-        <i class="fa-solid fa-eye" @click="goPreview(row)"></i>
+        <router-link :to="{ path: `/preview/${row.id}`, query: { data: JSON.stringify(row) } }">
+          <i class="fa-solid fa-eye"></i>
+        </router-link>
       </el-table-column>
       <el-table-column label="編輯" width="60" #default="{ row }">
+        <!-- <router-link :to="{ path: `/edit/${row.id}`, query: { data: JSON.stringify(row) } }">
+          <i class="fa-solid fa-pencil" v-if="publishedStatus(row) === '未發布' || publishedStatus(row) === '未開始'"></i>
+        </router-link> -->
         <i class="fa-solid fa-pencil" v-if="publishedStatus(row) === '未發布' || publishedStatus(row) === '未開始'"
           @click="goEdit(row)"></i>
       </el-table-column>
       <el-table-column label="統計" width="60" #default="{ row }">
         <i class="fa-solid fa-square-poll-vertical"
           v-if="publishedStatus(row) === '進行中' || publishedStatus(row) === '已結束'"
-          @click="goUserList(row, '/statistics')"></i>
+          @click="userList(row, '/statistics')"></i>
       </el-table-column>
       <el-table-column label="回饋" width="60" #default="{ row }">
         <i class="fa-solid fa-file-lines" v-if="publishedStatus(row) === '進行中' || publishedStatus(row) === '已結束'"
-          @click="goUserList(row, '/feedBack')"></i>
+          @click="userList(row, '/feedBack')"></i>
       </el-table-column>
     </el-table>
     <div v-else class="noTable">

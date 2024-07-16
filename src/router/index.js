@@ -34,7 +34,7 @@ const router = createRouter({
       component: () => import('../views/EditCheckout.vue')
     },
     {
-      path: '/preview',
+      path: '/preview/:id',
       component: () => import('../views/Preview.vue')
     },
     {
