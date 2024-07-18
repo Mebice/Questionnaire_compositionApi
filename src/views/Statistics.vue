@@ -326,13 +326,13 @@ const chartOptions = computed(() => {
 
                 .pieChart {
                     width: 450px;
-                    height: 300px;
+                    height: 350px;
                     margin-right: -50px;
                 }
 
                 .barChart {
                     width: 350px;
-                    height: 300px;
+                    height: 350px;
                 }
             }
         }

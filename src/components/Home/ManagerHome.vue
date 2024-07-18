@@ -237,14 +237,14 @@ onMounted(() => search(), loadCurrentPage(), loadSearch())
     <!-- 刪除彈窗 -->
     <el-dialog v-model="dialogSelection" @close="cancelDelete" width="800" center align-center>
       <el-table :data="selectedRows" stripe style="margin-bottom: 20px;">
-        <el-table-column label="ID" prop="questionnaire.id" width="70"></el-table-column>
-        <el-table-column label="標題" prop="questionnaire.title" show-overflow-tooltip></el-table-column>
-        <el-table-column label="描述" prop="questionnaire.description" show-overflow-tooltip></el-table-column>
-        <el-table-column label="狀態" prop="questionnaire.published" width="90" #default="{ row }">
-          {{ publishedStatus(row.questionnaire) }}
+        <el-table-column label="ID" prop="id" width="70"></el-table-column>
+        <el-table-column label="標題" prop="title" show-overflow-tooltip></el-table-column>
+        <el-table-column label="描述" prop="description" show-overflow-tooltip></el-table-column>
+        <el-table-column label="狀態" prop="published" width="90" #default="{ row }">
+          {{ publishedStatus(row) }}
         </el-table-column>
-        <el-table-column label="開始" prop="questionnaire.startDate" width="120"></el-table-column>
-        <el-table-column label="結束" prop="questionnaire.endDate" width="120"></el-table-column>
+        <el-table-column label="開始" prop="startDate" width="120"></el-table-column>
+        <el-table-column label="結束" prop="endDate" width="120"></el-table-column>
       </el-table>
       <template #footer>
         <span style="color: #6e4e23;font-weight: 700;font-size: 16pt;">刪除嗎?</span>
