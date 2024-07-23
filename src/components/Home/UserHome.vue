@@ -14,9 +14,14 @@ const pageSize = ref(10); // 每頁顯示數量
 
 // 查詢
 const search = async () => {
-    if (title.value || startDate.value || endDate.value) { // 當標題或開始時間或結束時間有值時
-        sessionStorage.setItem('currentPage', JSON.stringify(currentPage.value = 1)) // 讓當前頁回到第一頁存在sessionStorage
-    }
+      // 如果搜索條件有變化(當輸入的value值不等於儲存於sessionStorage的值時)，重置當前頁為1
+  if (title.value !== JSON.parse(sessionStorage.getItem('searchTitle')) ||
+      startDate.value !== JSON.parse(sessionStorage.getItem('searchStartDate')) ||
+      endDate.value !== JSON.parse(sessionStorage.getItem('searchEndDate'))) {
+    currentPage.value = 1;  // 重置到第1頁
+    sessionStorage.setItem('currentPage', JSON.stringify(currentPage.value));
+  }
+
     const response = await axios.get(`http://localhost:8080/api/quiz/search`, {
         params: {
             title: title.value,
@@ -101,7 +106,11 @@ watch([title, startDate, endDate], () => {
     search()
 })
 
-onMounted(() => search(), loadCurrentPage(), loadSearch())
+onMounted(() => {
+  loadCurrentPage();  // 加載當前頁碼
+  loadSearch();       // 加載搜索條件
+  search();           // 執行搜索
+})
 </script>
 
 <template>
