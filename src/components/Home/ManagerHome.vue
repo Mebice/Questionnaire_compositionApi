@@ -164,8 +164,8 @@ watch([title, startDate, endDate], () => {
 })
 
 onMounted(() => {
-  loadCurrentPage();  // 加載當前頁碼
   loadSearch();       // 加載搜索條件
+  loadCurrentPage();  // 加載當前頁碼
   search();           // 執行搜索
 })
 </script>
