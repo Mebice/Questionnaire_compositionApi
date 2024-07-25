@@ -1,7 +1,6 @@
 <script setup>
 import axios from 'axios';
-import { getQuestionnaireListAPI } from '@/apis/api'
-import { getQuestionListAPI } from '@/apis/api'
+import { getQuestionnaireListAPI, getQuestionListAPI } from '@/apis/api'
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';  // 提示框
