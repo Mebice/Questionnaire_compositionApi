@@ -108,7 +108,7 @@ const handleSelectionChange = (selection) => {
 
 // 刪除
 const goDelete = async () => {
-  const qnIdList = selectedRows.value.map(item => item.questionnaire.id);
+  const qnIdList = selectedRows.value.map(item => item.id);
   // console.log(qnIdList)
   await axios.post('http://localhost:8080/api/quiz/deleteQuestionnaire', {
     qnIdList: qnIdList

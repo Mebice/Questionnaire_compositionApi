@@ -114,12 +114,11 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .bgArea {
-
     width: 100vw;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #f4f4ed;
+    padding: 30px 0;
 
     .titleArea {
         width: 850px;
@@ -130,7 +129,7 @@ onMounted(() => {
         border-radius: 10px;
         box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, 0.28);
         padding: 15px 0 10px;
-        margin: 20px 0;
+        margin-bottom: 20px;
         color: #6e4e23;
         font-weight: 700;
 
@@ -153,7 +152,6 @@ onMounted(() => {
         padding: 25px 0 3px 0;
         border-radius: 10px;
         box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, 0.28);
-        margin-bottom: 30px;
         color: #6e4e23;
         font-weight: 700;
 
@@ -215,7 +213,7 @@ onMounted(() => {
             margin: 0 60px;
 
             &:hover {
-                background-color: rgba(143, 143, 143, 0.804);
+                background-color: rgba(143, 143, 143);
                 cursor: pointer;
             }
 
@@ -257,7 +255,7 @@ onMounted(() => {
             padding: 12px 15px;
 
             &:hover {
-                background-color: rgba(143, 143, 143, 0.804);
+                background-color: rgba(143, 143, 143);
                 cursor: pointer;
             }
 

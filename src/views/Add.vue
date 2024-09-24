@@ -69,7 +69,7 @@ const goNext = () => {
         ElMessage.warning('標題、描述、開始時間和結束時間不得為空');
         return;
     }
-    if(questionList.value.length < 1){
+    if (questionList.value.length < 1) {
         ElMessage.warning('請至少新增一道題目')
         return
     }
@@ -197,15 +197,16 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .bgArea {
-    padding: 50px 170px;
+    display: flex;
+    justify-content: center;
+    padding: 30px 0;
 
     .form-container {
         width: 850px;
         background-color: #fff;
         color: #6e4e23;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, 0.28);
 
         .fa-plus {
             font-size: 14pt;
@@ -365,8 +366,6 @@ onMounted(() => {
             padding: 20px 50px;
 
             .fa-rotate-left {
-                color: rgba(161, 158, 158, 0.804);
-                background-color: rgba(211, 211, 211, 0.804);
                 font-size: 20pt;
                 transition: all 0.5s ease;
                 border-radius: 50%;
@@ -374,7 +373,7 @@ onMounted(() => {
                 position: relative;
 
                 &:hover {
-                    background-color: rgba(143, 143, 143, 0.804);
+                    background-color: rgba(143, 143, 143);
                     cursor: pointer;
                 }
 
@@ -405,8 +404,6 @@ onMounted(() => {
             }
 
             .fa-arrow-right {
-                color: rgba(161, 158, 158, 0.804);
-                background-color: rgba(211, 211, 211, 0.804);
                 font-size: 20pt;
                 transition: all 0.5s ease;
                 border-radius: 50%;
@@ -414,7 +411,7 @@ onMounted(() => {
                 position: relative;
 
                 &:hover {
-                    background-color: rgba(143, 143, 143, 0.804);
+                    background-color: rgba(143, 143, 143);
                     cursor: pointer;
                 }
 

@@ -11,7 +11,8 @@ import { RouterLink, RouterView } from 'vue-router'
 
 <style lang="scss" scoped>
 .bgArea {
-  min-height: 580px;
+  width: 100%;
+  min-height: 100vh;
   background-color: #f5f5ed;
 
   .fa-trash,

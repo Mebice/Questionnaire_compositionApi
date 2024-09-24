@@ -54,9 +54,9 @@ onMounted(() => getQuestionList())
                     </div>
                 </div>
             </div>
-            <div class="btnArea">
-                <i class="fa-solid fa-circle-chevron-left" @click="$router.push('/managerHome')">
-                </i><span class="backText">Back</span>
+            <div class="btnArea" @click="$router.push('/managerHome')">
+                <i class="fa-solid fa-circle-chevron-left"></i>
+                <span class="backText">Back</span>
             </div>
         </div>
     </div>
@@ -64,11 +64,10 @@ onMounted(() => getQuestionList())
 
 <style lang="scss" scoped>
 .bgArea {
-    width: 100vw;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #f4f4ed;
+    padding: 30px 0;
 
     .titleArea {
         width: 850px;
@@ -80,7 +79,7 @@ onMounted(() => getQuestionList())
         box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, 0.28);
         padding-top: 15px;
         padding-bottom: 10px;
-        margin: 20px 0;
+        margin-bottom: 20px;
         color: #6e4e23;
         font-weight: 700;
 
@@ -103,7 +102,6 @@ onMounted(() => getQuestionList())
         padding: 25px 0 3px 0;
         border-radius: 10px;
         box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, 0.28);
-        margin-bottom: 30px;
         color: #6e4e23;
         font-weight: 700;
 
@@ -111,7 +109,7 @@ onMounted(() => getQuestionList())
             width: 93%;
             background-color: #fff;
             border-radius: 10px;
-            margin-bottom: 23px;
+            margin-bottom: 15px;
             border: 2px solid #ede9e6;
 
             .questionListInside {
@@ -140,22 +138,21 @@ onMounted(() => getQuestionList())
 
     .btnArea {
         display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        &:hover {
+                opacity: 0.6;
+                cursor: pointer;
+            }
 
         .fa-circle-chevron-left {
             font-size: 20pt;
             border-radius: 50%;
             padding: 12px;
-            margin: -10px 0 10px;
-
-            &:hover {
-                opacity: 0.6;
-                cursor: pointer;
-            }
         }
 
         .backText {
             font-size: 13pt;
-            margin-top: 5px;
         }
     }
 }

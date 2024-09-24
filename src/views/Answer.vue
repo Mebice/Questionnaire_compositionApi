@@ -59,6 +59,7 @@ const loadFromSessionStorage = () => {
 
 // 清空数据并返回
 const goBack = () => {
+    sessionStorage.removeItem('formData');
     sessionStorage.removeItem('userAnswerData');
     // 返回
     router.push('/');

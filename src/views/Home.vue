@@ -17,7 +17,7 @@ import Drawer from '@/components/Home/Drawer.vue'; // 引入抽屜組件
 
 <style lang="scss" scoped>
 .bgArea {
-    background-color: #ffffff;
+    background-color: #fff;
     .contentArea {
         display: flex;
 

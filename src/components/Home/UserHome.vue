@@ -14,13 +14,13 @@ const pageSize = ref(10); // 每頁顯示數量
 
 // 查詢
 const search = async () => {
-      // 如果搜索條件有變化(當輸入的value值不等於儲存於sessionStorage的值時)，重置當前頁為1
-  if (title.value !== JSON.parse(sessionStorage.getItem('searchTitle')) ||
-      startDate.value !== JSON.parse(sessionStorage.getItem('searchStartDate')) ||
-      endDate.value !== JSON.parse(sessionStorage.getItem('searchEndDate'))) {
-    currentPage.value = 1;  // 重置到第1頁
-    sessionStorage.setItem('currentPage', JSON.stringify(currentPage.value));
-  }
+    // 如果搜索條件有變化(當輸入的value值不等於儲存於sessionStorage的值時)，重置當前頁為1
+    if (title.value !== JSON.parse(sessionStorage.getItem('searchTitle')) ||
+        startDate.value !== JSON.parse(sessionStorage.getItem('searchStartDate')) ||
+        endDate.value !== JSON.parse(sessionStorage.getItem('searchEndDate'))) {
+        currentPage.value = 1;  // 重置到第1頁
+        sessionStorage.setItem('currentPage', JSON.stringify(currentPage.value));
+    }
 
     const response = await axios.get(`http://localhost:8080/api/quiz/search`, {
         params: {
@@ -107,9 +107,9 @@ watch([title, startDate, endDate], () => {
 })
 
 onMounted(() => {
-  loadSearch();       // 加載搜索條件
-  loadCurrentPage();  // 加載當前頁碼
-  search();           // 執行搜索
+    loadSearch();       // 加載搜索條件
+    loadCurrentPage();  // 加載當前頁碼
+    search();           // 執行搜索
 })
 </script>
 
