@@ -222,8 +222,8 @@ const chartOptions = computed(() => {
                     </div>
                 </div>
             </div>
-            <div class="btnArea">
-                <i class="fa-solid fa-circle-chevron-left" @click="$router.push('/managerHome')">
+            <div class="btnArea" @click="$router.push('/managerHome')">
+                <i class="fa-solid fa-circle-chevron-left">
                 </i><span class="backText">Back</span>
             </div>
         </div>
@@ -296,6 +296,7 @@ const chartOptions = computed(() => {
             .contentArea {
                 display: flex;
                 justify-content: space-between;
+                position: relative;
 
                 :deep(.el-checkbox__inner),
                 :deep(.el-radio__inner) {
@@ -311,9 +312,9 @@ const chartOptions = computed(() => {
                 }
 
                 .chartSelect {
-                    z-index: 999;
                     position: absolute;
-                    right: 240px;
+                    right: 0px;
+                    z-index: 999; // 為了能選取統計圖
                 }
 
                 :deep(.el-select__wrapper) {
@@ -339,19 +340,21 @@ const chartOptions = computed(() => {
     }
 
     .btnArea {
+        height: 30px;
         display: flex;
+        margin-bottom: 20px;
         color: $maincolor;
+
+        &:hover {
+            opacity: 0.6;
+            cursor: pointer;
+        }
 
         .fa-circle-chevron-left {
             font-size: 20pt;
             border-radius: 50%;
             padding: 12px;
             margin: -10px 0 10px;
-
-            &:hover {
-                opacity: 0.6;
-                cursor: pointer;
-            }
         }
 
         .backText {

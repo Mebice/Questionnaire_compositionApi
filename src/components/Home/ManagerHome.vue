@@ -22,8 +22,8 @@ const dialogSelection = ref(false); // 控制对话框的显示
 const search = async () => {
   // 如果搜索條件有變化(當輸入的value值不等於儲存於sessionStorage的值時)，重置當前頁為1
   if (title.value !== JSON.parse(sessionStorage.getItem('searchTitle')) ||
-      startDate.value !== JSON.parse(sessionStorage.getItem('searchStartDate')) ||
-      endDate.value !== JSON.parse(sessionStorage.getItem('searchEndDate'))) {
+    startDate.value !== JSON.parse(sessionStorage.getItem('searchStartDate')) ||
+    endDate.value !== JSON.parse(sessionStorage.getItem('searchEndDate'))) {
     currentPage.value = 1;  // 重置到第1頁
     sessionStorage.setItem('currentPage', JSON.stringify(currentPage.value));
   }
@@ -173,8 +173,9 @@ onMounted(() => {
   <div class="bgArea">
     <div class="searchArea">
       <i class="fa-solid fa-pen-to-square" style="font-size: 20pt;margin-left:40px;margin-right: 10px;color: #fff;"></i>
-      <span
-        style="font-size: 18pt;margin-right: 30px;;color: #fff;font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">Questionnaire</span>
+      <h1
+        style="font-size: 18pt;margin-right: 30px;;color: #fff;font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">
+        Questionnaire</h1>
       <div style="width: 2px;height: 50%;margin-right: 10px;background-color: #fff;"></div>
       <div class="searchTitle">
         <span class="titleText">標題</span>
@@ -289,7 +290,7 @@ onMounted(() => {
     font-size: 18pt;
     z-index: 999;
     position: fixed;
-    bottom: 50px;
+    bottom: 20px;
     right: 15px;
     padding: 8px 8px 6px;
     border-radius: 50%;
@@ -312,7 +313,7 @@ onMounted(() => {
     align-items: center;
     justify-content: space-between;
     position: fixed;
-    bottom: 50px;
+    bottom: 20px;
     right: 15px;
     padding-right: 55px;
     padding-left: 20px;
@@ -475,6 +476,11 @@ onMounted(() => {
   :deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
     background-color: $maincolor;
     color: #fff;
+  }
+
+  // 點擊跳轉分頁框時
+  :deep(.el-input__wrapper.is-focus) {
+    box-shadow: 0 0 0 1px $maincolor;
   }
 }
 </style>

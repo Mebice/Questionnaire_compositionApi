@@ -80,11 +80,10 @@ const hoverBackStyle = {
 <style lang="scss" scoped>
 .fa-circle-chevron-right {
     z-index: 999;
-    height: 30px;
     font-size: 18pt;
     color: $maincolor;
-    margin-top: 510px;
     position: fixed;
+    bottom: 20px;
 
     &:hover {
         color: #DBD3A4;

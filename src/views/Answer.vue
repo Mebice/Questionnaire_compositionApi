@@ -200,11 +200,11 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .bgArea {
-    width: 100vw;
     display: flex;
     flex-direction: column;
     align-items: center;
     background-color: #f4f4ed;
+    padding: 30px 0;
 
     .titleArea {
         width: 850px;
@@ -216,7 +216,7 @@ onMounted(() => {
         box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, 0.28);
         padding-top: 15px;
         padding-bottom: 10px;
-        margin: 20px 0;
+        margin-bottom: 20px;
         color: #6e4e23;
         font-weight: 700;
 
@@ -299,7 +299,6 @@ onMounted(() => {
         padding: 25px 0 3px 0;
         border-radius: 10px;
         box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, 0.28);
-        margin-bottom: 30px;
         color: #6e4e23;
         font-weight: 700;
 
@@ -341,8 +340,6 @@ onMounted(() => {
         padding-bottom: 20px;
 
         .fa-rotate-left {
-            color: rgba(161, 158, 158, 0.804);
-            background-color: rgba(211, 211, 211, 0.804);
             font-size: 20pt;
             transition: all 0.5s ease;
             border-radius: 50%;
@@ -381,8 +378,6 @@ onMounted(() => {
         }
 
         .fa-arrow-right {
-            color: rgba(161, 158, 158, 0.804);
-            background-color: rgba(211, 211, 211, 0.804);
             font-size: 20pt;
             transition: all 0.5s ease;
             border-radius: 50%;

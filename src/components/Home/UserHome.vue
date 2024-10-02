@@ -309,5 +309,10 @@ onMounted(() => {
         background-color: $maincolor;
         color: #fff;
     }
+
+    // 點擊跳轉分頁框時
+    :deep(.el-input__wrapper.is-focus){
+        box-shadow: 0 0 0 1px $maincolor;
+    }
 }
 </style>

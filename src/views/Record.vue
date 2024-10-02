@@ -91,8 +91,8 @@ recordData.value.answers.forEach(answer => {
                     </div>
                 </div>
             </div>
-            <div class="btnArea">
-                <i class="fa-solid fa-circle-chevron-left" @click="$router.push('/feedBack')">
+            <div class="btnArea" @click="$router.push('/feedBack')">
+                <i class="fa-solid fa-circle-chevron-left">
                 </i><span class="backText">Back</span>
             </div>
         </div>
@@ -101,11 +101,10 @@ recordData.value.answers.forEach(answer => {
 
 <style lang="scss" scoped>
 .bgArea {
-
-    width: 100vw;
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 30px 0;
     background-color: #f4f4ed;
 
     .titleArea {
@@ -118,7 +117,7 @@ recordData.value.answers.forEach(answer => {
         box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, 0.28);
         padding-top: 15px;
         padding-bottom: 10px;
-        margin: 20px 0;
+        margin-bottom: 20px;
         color: #6e4e23;
         font-weight: 700;
 
@@ -205,7 +204,6 @@ recordData.value.answers.forEach(answer => {
         padding: 25px 0 3px 0;
         border-radius: 10px;
         box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, 0.28);
-        margin-bottom: 30px;
         color: #6e4e23;
         font-weight: 700;
 
@@ -259,8 +257,15 @@ recordData.value.answers.forEach(answer => {
     }
 
     .btnArea {
+        height: 30px;
         display: flex;
+        margin-bottom: 20px;
         color: $maincolor;
+
+        &:hover {
+            opacity: 0.6;
+            cursor: pointer;
+        }
 
         .fa-circle-chevron-left {
             font-size: 20pt;
@@ -268,10 +273,6 @@ recordData.value.answers.forEach(answer => {
             padding: 12px;
             margin: -10px 0 10px;
 
-            &:hover {
-                opacity: 0.6;
-                cursor: pointer;
-            }
         }
 
         .backText {

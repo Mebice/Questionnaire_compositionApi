@@ -97,8 +97,8 @@ onMounted(() => {
         <el-pagination background style="padding: 30px 0;" v-model:current-page="currentPage"
             v-model:page-size="pageSize" layout="prev, pager, next, total, jumper" :total="total"
             @size-change="handleSizeChange" @current-change="handleCurrentChange" />
-        <div class="btnArea">
-            <i class="fa-solid fa-circle-chevron-left" @click="goBack">
+        <div class="btnArea" @click="goBack">
+            <i class="fa-solid fa-circle-chevron-left">
             </i><span class="backText">Back</span>
         </div>
     </div>
@@ -172,19 +172,20 @@ onMounted(() => {
     }
 
     .btnArea {
+        height: 30px;
         display: flex;
         color: $maincolor;
+
+        &:hover {
+            opacity: 0.6;
+            cursor: pointer;
+        }
 
         .fa-circle-chevron-left {
             font-size: 20pt;
             border-radius: 50%;
             padding: 12px;
             margin: -10px 0 10px;
-
-            &:hover {
-                opacity: 0.6;
-                cursor: pointer;
-            }
         }
 
         .backText {

@@ -119,24 +119,24 @@ onMounted(() => {
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="btnArea">
-            <i class="fa-solid fa-arrow-left" @click="$router.push('/answer')"></i>
-            <i class="fa-solid fa-floppy-disk" @click="saveDialog = true"></i>
-            <!-- 彈出是否確認儲存對話框 -->
-            <el-dialog v-model="saveDialog" width="500" align-center center>
-                <div class="content" style="display: flex; justify-content: center;padding-bottom:10px;">
-                    <i class="fa-solid fa-circle-question"
-                        style="color: #6e4e23;font-size: 20pt;margin-right: 10px;"></i>
-                    <span style="color: #6e4e23;font-weight: 700;font-size: 16pt">提交作答嗎 ?</span>
-                </div>
-                <template #footer>
-                    <div class="dialog-footer">
-                        <el-button @click="saveDialog = false">取消</el-button>
-                        <el-button type="primary" @click="save">確認</el-button>
+            <div class="btnArea">
+                <i class="fa-solid fa-arrow-left" @click="$router.push('/answer')"></i>
+                <i class="fa-solid fa-floppy-disk" @click="saveDialog = true"></i>
+                <!-- 彈出是否確認儲存對話框 -->
+                <el-dialog v-model="saveDialog" width="500" align-center center>
+                    <div class="content" style="display: flex; justify-content: center;padding-bottom:10px;">
+                        <i class="fa-solid fa-circle-question"
+                            style="color: #6e4e23;font-size: 20pt;margin-right: 10px;"></i>
+                        <span style="color: #6e4e23;font-weight: 700;font-size: 16pt">提交作答嗎 ?</span>
                     </div>
-                </template>
-            </el-dialog>
+                    <template #footer>
+                        <div class="dialog-footer">
+                            <el-button @click="saveDialog = false">取消</el-button>
+                            <el-button type="primary" @click="save">確認</el-button>
+                        </div>
+                    </template>
+                </el-dialog>
+            </div>
         </div>
     </div>
 </template>
@@ -146,6 +146,7 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 30px 0;
     background-color: #f4f4ed;
 
     .titleArea {
@@ -158,7 +159,7 @@ onMounted(() => {
         box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, 0.28);
         padding-top: 15px;
         padding-bottom: 10px;
-        margin: 20px 0;
+        margin-bottom: 20px;
         color: #6e4e23;
         font-weight: 700;
 
@@ -245,7 +246,6 @@ onMounted(() => {
         padding: 25px 0 3px 0;
         border-radius: 10px;
         box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, 0.28);
-        margin-bottom: 30px;
         color: #6e4e23;
         font-weight: 700;
 
@@ -304,16 +304,6 @@ onMounted(() => {
         align-items: center;
         justify-content: space-between;
         padding-bottom: 20px;
-
-        :deep(.el-checkbox__inner) {
-            border: 1px solid $textcolor;
-        }
-
-        :deep(.el-checkbox__label) {
-            font-size: 12pt;
-            font-weight: 700;
-            color: $textcolor;
-        }
 
         .fa-arrow-left {
             font-size: 20pt;
